@@ -1,16 +1,16 @@
-import { DocumentReference } from "firebase/firestore";
+import { DocumentReference } from 'firebase/firestore';
 
 interface IndexProps {
-  id: string;
-  ref: DocumentReference;
+    id: string;
+    ref: DocumentReference;
 }
 
 export class Index implements IndexProps {
-  id: string;
-  ref: DocumentReference;
+    id: string;
+    ref: DocumentReference;
 
-  constructor(props: IndexProps) {
-    this.id = props.id;
-    this.ref = props.ref;
-  }
+    constructor(props: IndexProps) {
+        this.id = props.id;
+        this.ref = props.ref;
+    }
 }

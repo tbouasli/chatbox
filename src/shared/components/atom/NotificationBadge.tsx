@@ -1,14 +1,14 @@
 interface NotificationBadgeProps {
-  count: number;
+    count: number;
 }
 
 function NotificationBadge({ count }: NotificationBadgeProps) {
-  const displayableCount = count > 99 ? "99+" : count;
+    const displayableCount = count > 99 ? '99+' : count;
 
-  return (
-    <div className="h-4 w-4 grid place-items-center bg-primary rounded-full">
-      <span className="text-xs">{displayableCount}</span>
-    </div>
-  );
+    return (
+        <div className="h-4 w-4 grid place-items-center bg-primary rounded-full">
+            <span className="text-xs">{displayableCount}</span>
+        </div>
+    );
 }
 export default NotificationBadge;

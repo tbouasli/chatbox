@@ -1,99 +1,99 @@
-@import url("https://fonts.googleapis.com/css2?family=Roboto&family=Russo+One&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Roboto&family=Russo+One&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
-  :root {
-    --font-title: "Russo One", sans-serif;
-    --font-body: "Roboto", sans-serif;
+    :root {
+        --font-title: 'Russo One', sans-serif;
+        --font-body: 'Roboto', sans-serif;
 
-    --background: 255 7% 11%;
-    --foreground: 0 0% 81%;
+        --background: 255 7% 11%;
+        --foreground: 0 0% 81%;
 
-    --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
+        --muted: 240 3.7% 15.9%;
+        --muted-foreground: 240 5% 64.9%;
 
-    --popover: 240 10% 3.9%;
-    --popover-foreground: 0 0% 98%;
+        --popover: 240 10% 3.9%;
+        --popover-foreground: 0 0% 98%;
 
-    --card: 240 10% 3.9%;
-    --card-foreground: 0 0% 98%;
+        --card: 240 10% 3.9%;
+        --card-foreground: 0 0% 98%;
 
-    --border: 240 3.7% 15.9%;
-    --input: 0 0% 39%;
+        --border: 240 3.7% 15.9%;
+        --input: 0 0% 39%;
 
-    --primary: 216 49% 43%;
-    --primary-foreground: 0 0% 81%;
+        --primary: 216 49% 43%;
+        --primary-foreground: 0 0% 81%;
 
-    --secondary: 162 65% 66%;
-    --secondary-foreground: 0 0% 16%;
+        --secondary: 162 65% 66%;
+        --secondary-foreground: 0 0% 16%;
 
-    --accent: 0 0% 72%;
-    --accent-foreground: 0 0% 16%;
+        --accent: 0 0% 72%;
+        --accent-foreground: 0 0% 16%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 85.7% 97.3%;
+        --destructive: 0 62.8% 30.6%;
+        --destructive-foreground: 0 85.7% 97.3%;
 
-    --ring: 240 3.7% 15.9%;
+        --ring: 240 3.7% 15.9%;
 
-    --radius: 0.5rem;
-  }
+        --radius: 0.5rem;
+    }
 
-  .dark {
-    --font-title: "Russo One", sans-serif;
-    --font-body: "Roboto", sans-serif;
+    .dark {
+        --font-title: 'Russo One', sans-serif;
+        --font-body: 'Roboto', sans-serif;
 
-    --background: 255 7% 11%;
-    --foreground: 0 0% 81%;
+        --background: 255 7% 11%;
+        --foreground: 0 0% 81%;
 
-    --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
+        --muted: 240 3.7% 15.9%;
+        --muted-foreground: 240 5% 64.9%;
 
-    --popover: 240 10% 3.9%;
-    --popover-foreground: 0 0% 98%;
+        --popover: 240 10% 3.9%;
+        --popover-foreground: 0 0% 98%;
 
-    --card: 240 10% 3.9%;
-    --card-foreground: 0 0% 98%;
+        --card: 240 10% 3.9%;
+        --card-foreground: 0 0% 98%;
 
-    --border: 240 3.7% 15.9%;
-    --input: 0 0% 39%;
+        --border: 240 3.7% 15.9%;
+        --input: 0 0% 39%;
 
-    --primary: 216 49% 43%;
-    --primary-foreground: 0 0% 81%;
+        --primary: 216 49% 43%;
+        --primary-foreground: 0 0% 81%;
 
-    --secondary: 162 65% 66%;
-    --secondary-foreground: 0 0% 16%;
+        --secondary: 162 65% 66%;
+        --secondary-foreground: 0 0% 16%;
 
-    --accent: 0 0% 72%;
-    --accent-foreground: 0 0% 16%;
+        --accent: 0 0% 72%;
+        --accent-foreground: 0 0% 16%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 85.7% 97.3%;
+        --destructive: 0 62.8% 30.6%;
+        --destructive-foreground: 0 85.7% 97.3%;
 
-    --ring: 240 3.7% 15.9%;
+        --ring: 240 3.7% 15.9%;
 
-    --radius: 0.5rem;
-  }
+        --radius: 0.5rem;
+    }
 }
 
 @layer base {
-  * {
-    @apply border-border;
-  }
+    * {
+        @apply border-border;
+    }
 
-  body {
-    @apply bg-background text-foreground font-body;
-  }
+    body {
+        @apply bg-background text-foreground font-body;
+    }
 
-  #root {
-    @apply bg-gradient-to-b from-background to-primary/30 from-40% h-[100dvh];
-  }
+    #root {
+        @apply bg-gradient-to-b from-background to-primary/30 from-40% h-[100dvh];
+    }
 }
 
 @layer utilities {
-  .center {
-    @apply flex justify-center items-center text-center;
-  }
+    .center {
+        @apply flex justify-center items-center text-center;
+    }
 }

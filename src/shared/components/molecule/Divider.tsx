@@ -1,18 +1,19 @@
-import React from "react";
-import Divider from "../atom/Divider";
+import React from 'react';
+
+import Divider from '../atom/Divider';
 
 interface DividerWithInfixProps {
-  infix: string;
+    infix: string;
 }
 
 function DividerWithInfix({ infix }: DividerWithInfixProps) {
-  return (
-    <div className="flex items-center gap-2">
-      <Divider />
-      <span className="text-accent">{infix}</span>
-      <Divider />
-    </div>
-  );
+    return (
+        <div className="flex items-center gap-2">
+            <Divider />
+            <span className="text-accent">{infix}</span>
+            <Divider />
+        </div>
+    );
 }
 
 export default DividerWithInfix;

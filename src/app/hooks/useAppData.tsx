@@ -1,10 +1,11 @@
-import AppDataContext from "@/app/provider/AppData";
-import React from "react";
+import React from 'react';
+
+import AppDataContext from '@/app/provider/AppData';
 
 function useAppData() {
-  const { user, chats } = React.useContext(AppDataContext);
+    const { user, chats } = React.useContext(AppDataContext);
 
-  return { user, chats };
+    return { user, chats };
 }
 
 export default useAppData;
