@@ -11,13 +11,8 @@ const manifestForPlugin: Partial<VitePWAOptions> = {
         description: 'An app to chat with your friends',
         icons: [
             {
-                src: '/android-chrome-192x192.png',
+                src: '/android-icon-192x192.png',
                 sizes: '192x192',
-                type: 'image/png',
-            },
-            {
-                src: '/android-chrome-512x512.png',
-                sizes: '512x512',
                 type: 'image/png',
             },
             {
@@ -27,8 +22,8 @@ const manifestForPlugin: Partial<VitePWAOptions> = {
                 purpose: 'apple touch icon',
             },
             {
-                src: '/maskable_icon.png',
-                sizes: '225x225',
+                src: '/ms-icon-144x144.png',
+                sizes: '144x144',
                 type: 'image/png',
                 purpose: 'any maskable',
             },
