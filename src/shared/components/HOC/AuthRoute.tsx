@@ -4,6 +4,8 @@ import { Navigate, Outlet } from 'react-router-dom';
 
 import { auth } from '@/lib/firebase';
 
+import ChatBoxLogo from '../atom/ChatBoxLogo';
+
 interface AuthRouteProps {
     redirectIf: 'authenticated' | 'unauthenticated';
     redirectTo: string;
@@ -16,7 +18,12 @@ function AuthRoute({ redirectIf, redirectTo }: AuthRouteProps) {
         return user ? 'authenticated' : 'unauthenticated';
     }, [user]);
 
-    if (loading) return <h1>skeleton</h1>;
+    if (loading)
+        return (
+            <div className="h-[100dvh] w-full center">
+                <ChatBoxLogo />
+            </div>
+        );
 
     if (redirectIf === authState) return <Navigate to={redirectTo} />;
 
