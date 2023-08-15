@@ -20,7 +20,7 @@ function Message({ content, createdAt, fromSelf }: MessageProps) {
                 }`}
             >
                 <span className="text-sm">{content}</span>
-                <span className="text-xs text-gray-400">{format(createdAt)}</span>
+                <span className="text-xs text-gray-400">{format(createdAt.toDate())}</span>
             </div>
         </div>
     );

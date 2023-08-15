@@ -1,6 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { signInWithEmailAndPassword } from 'firebase/auth';
-import React from 'react';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 
@@ -33,7 +32,9 @@ function SignInForm() {
         } catch (error) {
             toast({
                 title: 'Error',
-                description: error.message,
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                //@ts-ignore
+                description: error?.message ?? 'Something went wrong',
             });
         }
     }

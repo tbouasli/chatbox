@@ -1,5 +1,3 @@
-import React from 'react';
-
 import ChatBoxLogoWithTitle from '@/shared/components/molecule/ChatBoxLogoWithTitle';
 import DividerWithInfix from '@/shared/components/molecule/Divider';
 import SignInForm from '@/shared/components/organism/SignInForm';

@@ -40,7 +40,7 @@ function ChatItem({ displayName, lastMessage, lastMessageTimestamp, photoURL, lo
             <div className="flex flex-col grow overflow-hidden">
                 <div className="flex items-center justify-between">
                     <span className="text-base font-semibold truncate">{displayName}</span>
-                    {lastMessageTimestamp && <span className="text-xs text-gray-500">{format(lastMessageTimestamp)}</span>}
+                    {lastMessageTimestamp && <span className="text-xs text-gray-500">{format(lastMessageTimestamp.toDate())}</span>}
                 </div>
                 <span className="text-sm text-gray-500">{lastMessage ?? 'New chat!'}</span>
             </div>
