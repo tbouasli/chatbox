@@ -30,12 +30,12 @@ function SignInForm() {
         try {
             await signInWithEmailAndPassword(auth, values.email, values.password);
         } catch (error) {
-            toast({
-                title: 'Error',
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                //@ts-ignore
-                description: error?.message ?? 'Something went wrong',
-            });
+            if (error instanceof Error) {
+                toast({
+                    title: 'Error',
+                    description: error?.message,
+                });
+            }
         }
     }
 

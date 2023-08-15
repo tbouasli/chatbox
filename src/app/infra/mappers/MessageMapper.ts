@@ -10,7 +10,7 @@ class MessageMapper implements FirestoreDataConverter<Message> {
             content: data.content,
             chat: data.chat,
             sender: data.sender,
-            createdAt: data.createdAt.toDate(),
+            createdAt: data.createdAt,
         });
     }
 

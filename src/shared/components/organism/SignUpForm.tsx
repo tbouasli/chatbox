@@ -42,12 +42,12 @@ function SignUpForm() {
 
             await createUserWithEmailAndPassword(auth, values.email, values.password);
         } catch (error) {
-            toast({
-                title: 'Error',
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                //@ts-ignore
-                description: error.message,
-            });
+            if (error instanceof Error) {
+                toast({
+                    title: 'Error',
+                    description: error?.message,
+                });
+            }
         }
     }
 
