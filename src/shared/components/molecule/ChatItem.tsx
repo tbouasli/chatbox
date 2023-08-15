@@ -1,17 +1,26 @@
+import { Timestamp } from 'firebase/firestore';
+
 import UserImage from '@/shared/components/atom/UserImage';
 
 import ListItem from './ListItem';
 
-interface UserItemProps {
+interface ChatItemProps {
     onClick?: () => void;
     photoURL?: string;
     displayName?: string;
-    nickname?: string;
+    lastMessage?: string;
+    lastMessageTimestamp?: Timestamp;
     loading?: boolean;
     children?: React.ReactNode;
 }
 
-function UserItem({ displayName, nickname, photoURL, loading, children, onClick }: UserItemProps) {
+const { format } = Intl.DateTimeFormat('pt-BR', {
+    day: 'numeric',
+    month: 'numeric',
+    year: 'numeric',
+});
+
+function ChatItem({ displayName, lastMessage, lastMessageTimestamp, photoURL, loading, children, onClick }: ChatItemProps) {
     if (loading)
         return (
             <ListItem className="animate-pulse">
@@ -23,17 +32,20 @@ function UserItem({ displayName, nickname, photoURL, loading, children, onClick 
             </ListItem>
         );
 
-    if (!nickname) return null;
+    if (!displayName) return null;
 
     return (
         <ListItem onClick={onClick}>
             <UserImage src={photoURL} loading={loading} />
             <div className="flex flex-col grow overflow-hidden">
-                <p className="text-base font-semibold truncate">{displayName}</p>
-                <p className="text-sm text-gray-500">@{nickname}</p>
+                <div className="flex items-center justify-between">
+                    <span className="text-base font-semibold truncate">{displayName}</span>
+                    {lastMessageTimestamp && <span className="text-xs text-gray-500">{format(lastMessageTimestamp)}</span>}
+                </div>
+                <span className="text-sm text-gray-500">{lastMessage ?? 'New chat!'}</span>
             </div>
             {children}
         </ListItem>
     );
 }
-export default UserItem;
+export default ChatItem;

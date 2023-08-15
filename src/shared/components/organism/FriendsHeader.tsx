@@ -2,8 +2,7 @@ import { UserPlus } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 import Title from '@/shared/components/atom/Title';
-
-import AppHeaderWithBackButton from '../molecule/AppHeaderWithBackButton';
+import AppHeaderWithBackButton from '@/shared/components/molecule/AppHeaderWithBackButton';
 
 function FriendsHeader() {
     return (

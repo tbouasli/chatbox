@@ -1,6 +1,6 @@
 import React from 'react';
 
-import Divider from '../atom/Divider';
+import Divider from '@/shared/components/atom/Divider';
 
 interface DividerWithInfixProps {
     infix: string;

@@ -12,7 +12,7 @@ class UserMapper implements FirestoreDataConverter<User> {
             photoURL: data.photoURL,
             chats: data.chats,
             friends: data.friends,
-            friendRequests: data.friendRequests,
+            friendRequestsReceived: data.friendRequestsReceived,
         });
     }
 
@@ -23,7 +23,7 @@ class UserMapper implements FirestoreDataConverter<User> {
             photoURL: user.photoURL,
             chats: user.chats,
             friends: user.friends,
-            friendRequests: user.friendRequests,
+            friendRequestsReceived: user.friendRequestsReceived,
         };
     }
 }

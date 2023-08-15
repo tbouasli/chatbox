@@ -1,6 +1,4 @@
-import React from 'react';
-
-import ContinueWithGoogle from '../molecule/ContinueWithGoogle';
+import ContinueWithGoogle from '@/shared/components/molecule/ContinueWithGoogle';
 
 function SocialLogin() {
     return (

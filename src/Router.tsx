@@ -1,7 +1,9 @@
 import { Route, RouterProvider, createBrowserRouter, createRoutesFromElements } from 'react-router-dom';
 
+import Chat from './app/pages/chat';
 import Friends from './app/pages/friends';
 import AddFriends from './app/pages/friends/add';
+import FriendRequests from './app/pages/friends/requests';
 import Home from './app/pages/home';
 import OnBoarding from './app/pages/on-boarding';
 import Settings from './app/pages/settings';
@@ -29,6 +31,8 @@ const router = createBrowserRouter(
                 <Route path="settings" element={<Settings />} />
                 <Route path="friends" element={<Friends />} />
                 <Route path="friends/add" element={<AddFriends />} />
+                <Route path="friends/requests" element={<FriendRequests />} />
+                <Route path="chat/:id" element={<Chat />} />
             </Route>
             <Route path="on-boarding" element={<OnBoarding />} />
         </Route>,

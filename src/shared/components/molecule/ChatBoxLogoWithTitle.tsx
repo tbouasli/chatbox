@@ -6,8 +6,8 @@ function ChatBoxLogoWithTitle() {
         <div className="flex items-center gap-2">
             <ChatBoxLogo />
             <div>
-                <Title className="leading-5" text="chat" />
-                <Title className="leading-5" text="box" />
+                <Title translate="no" className="leading-5 select-none" text="chat" />
+                <Title translate="no" className="leading-5 select-none" text="box" />
             </div>
         </div>
     );

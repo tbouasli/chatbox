@@ -10,6 +10,7 @@ import * as z from 'zod';
 import { auth, firestore, storage } from '@/lib/firebase';
 
 import FrontIcon from '@/shared/assets/icon/front.svg';
+import ImagePicker from '@/shared/components/molecule/ImagePicker';
 import { Button } from '@/shared/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/shared/components/ui/form';
 import { Input } from '@/shared/components/ui/input';
@@ -17,8 +18,6 @@ import { useToast } from '@/shared/components/ui/use-toast';
 
 import { userMapper } from '@/app/infra/mappers/UserMapper';
 import { User } from '@/app/infra/models/User';
-
-import ImagePicker from '../molecule/ImagePicker';
 
 const FormSchema = z.object({
     displayName: z.string().min(3, {
@@ -45,8 +44,6 @@ function OnBoardingForm() {
     });
 
     React.useEffect(() => {
-        console.log(form.getValues('displayName'));
-
         if (user?.displayName && form.getValues('displayName') === undefined) {
             form.setValue('displayName', user.displayName);
         }

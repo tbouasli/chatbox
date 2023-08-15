@@ -1,12 +1,12 @@
 import Title from '@/shared/components/atom/Title';
 import AppHeaderWithBackButton from '@/shared/components/molecule/AppHeaderWithBackButton';
 
-function OnBoardingHeader() {
+function FriendsRequestsHeader() {
     return (
         <AppHeaderWithBackButton>
-            <Title text="Create Profile" />
+            <Title text="Friend Requests" />
         </AppHeaderWithBackButton>
     );
 }
 
-export default OnBoardingHeader;
+export default FriendsRequestsHeader;

@@ -1,7 +1,7 @@
 import { Search } from 'lucide-react';
 
-import AppHeaderWithBackButton from '../molecule/AppHeaderWithBackButton';
-import { Input } from '../ui/input';
+import AppHeaderWithBackButton from '@/shared/components/molecule/AppHeaderWithBackButton';
+import { Input } from '@/shared/components/ui/input';
 
 interface AddFriendsHeaderProps {
     setNickname: (nickname: string) => void;

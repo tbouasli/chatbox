@@ -13,6 +13,6 @@ function UserImage({ loading, className, ...props }: UserImageProps) {
         );
     }
 
-    return <img className={twMerge('rounded-full', className)} height={44} width={44} {...props} />;
+    return <img className={twMerge('rounded-full', className)} height={44} width={44} {...props} referrerPolicy="no-referrer" />;
 }
 export default UserImage;

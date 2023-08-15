@@ -1,9 +1,8 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 
-import useChatsData from '@/app/hooks/useChatsData';
+import useChatsData, { ChatDTO } from '@/app/hooks/useChatsData';
 import useUserData from '@/app/hooks/useUserData';
-import { Chat } from '@/app/infra/models/Chat';
 import { User } from '@/app/infra/models/User';
 
 interface AppDataProps {
@@ -12,7 +11,7 @@ interface AppDataProps {
         loading: boolean;
     };
     chats: {
-        data?: Chat[] | null;
+        data?: ChatDTO[] | null;
         loading: boolean;
     };
 }

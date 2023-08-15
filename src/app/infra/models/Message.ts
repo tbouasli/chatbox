@@ -1,11 +1,12 @@
-import { DocumentReference } from 'firebase/firestore';
+import { DocumentReference, Timestamp } from 'firebase/firestore';
+import { v4 as UUID } from 'uuid';
 
 interface MessageProps {
-    id: string;
+    id?: string;
     content: string;
     chat: DocumentReference;
     sender: DocumentReference;
-    createdAt: Date;
+    createdAt: Timestamp;
 }
 
 export class Message implements MessageProps {
@@ -13,10 +14,10 @@ export class Message implements MessageProps {
     content: string;
     chat: DocumentReference;
     sender: DocumentReference;
-    createdAt: Date;
+    createdAt: Timestamp;
 
     constructor(props: MessageProps) {
-        this.id = props.id;
+        this.id = props.id || UUID();
         this.content = props.content;
         this.chat = props.chat;
         this.sender = props.sender;

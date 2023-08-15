@@ -1,15 +1,15 @@
-import UserItem from '@/shared/components/molecule/UserItem';
+import UserFoundItem from '@/shared/components/molecule/UserFoundItem';
 import AddFriendsHeader from '@/shared/components/organism/AddFriendsHeader';
 
 import useSearchUser from '@/app/hooks/useSearchUser';
 
 function AddFriends() {
-    const { setNickname, user, loading } = useSearchUser();
+    const { foundUser, friendRequest, loading, setNickname } = useSearchUser();
 
     return (
         <main className="h-full w-full flex flex-col">
             <AddFriendsHeader setNickname={setNickname} />
-            <UserItem user={user} loading={loading} />
+            <UserFoundItem user={foundUser} loading={loading} friendRequest={friendRequest} />
         </main>
     );
 }

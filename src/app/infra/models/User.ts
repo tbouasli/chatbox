@@ -7,7 +7,7 @@ interface UserProps {
     photoURL: string;
     chats?: DocumentReference[];
     friends?: DocumentReference[];
-    friendRequests?: DocumentReference[];
+    friendRequestsReceived?: DocumentReference[];
 }
 
 export class User implements UserProps {
@@ -15,9 +15,9 @@ export class User implements UserProps {
     displayName: string;
     nickname: string;
     photoURL: string;
-    chats?: DocumentReference[];
-    friends?: DocumentReference[];
-    friendRequests?: DocumentReference[];
+    chats: DocumentReference[];
+    friends: DocumentReference[];
+    friendRequestsReceived: DocumentReference[];
 
     constructor(props: UserProps) {
         this.id = props.id;
@@ -26,6 +26,18 @@ export class User implements UserProps {
         this.photoURL = props.photoURL;
         this.chats = props.chats || [];
         this.friends = props.friends || [];
-        this.friendRequests = props.friendRequests || [];
+        this.friendRequestsReceived = props.friendRequestsReceived || [];
+    }
+
+    addFriendRequestReceived(friendRequest: DocumentReference): void {
+        this.friendRequestsReceived.push(friendRequest);
+    }
+
+    removeFriendRequestReceived(friendRequest: DocumentReference): void {
+        this.friendRequestsReceived = this.friendRequestsReceived.filter((fr) => fr.id !== friendRequest.id);
+    }
+
+    addFriend(friend: DocumentReference): void {
+        this.friends.push(friend);
     }
 }

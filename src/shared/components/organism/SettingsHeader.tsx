@@ -1,6 +1,5 @@
 import Title from '@/shared/components/atom/Title';
-
-import AppHeaderWithBackButton from '../molecule/AppHeaderWithBackButton';
+import AppHeaderWithBackButton from '@/shared/components/molecule/AppHeaderWithBackButton';
 
 function SettingsHeader() {
     return (
