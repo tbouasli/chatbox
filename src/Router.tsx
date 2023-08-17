@@ -1,4 +1,4 @@
-import { Route, RouterProvider, createBrowserRouter, createRoutesFromElements } from 'react-router-dom';
+import { Navigate, Route, RouterProvider, createBrowserRouter, createRoutesFromElements } from 'react-router-dom';
 
 import Chat from './app/pages/chat';
 import Friends from './app/pages/friends';
@@ -15,6 +15,7 @@ import AuthRoute from './shared/components/HOC/AuthRoute';
 const router = createBrowserRouter(
     createRoutesFromElements(
         <Route path="/">
+            <Route path="" element={<Navigate to="/app" />} />
             <Route path="auth" element={<AuthRoute redirectIf="authenticated" redirectTo="/app" />}>
                 <Route path="sign-in" element={<SignIn />} />
                 <Route path="sign-up" element={<SignUp />} />
