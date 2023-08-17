@@ -13,7 +13,7 @@ function Chat() {
     const { data } = useChatData(id ?? 'as');
 
     return (
-        <main className="h-full w-full flex flex-col">
+        <main className="h-[100dvh] w-full flex flex-col">
             <AppHeaderWithBackButton>
                 <UserItem displayName={data?.displayName ?? 'Loading...'} photoURL={data?.photoURL ?? ''} nickname={data?.nickname ?? ''} />
             </AppHeaderWithBackButton>
