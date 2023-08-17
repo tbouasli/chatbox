@@ -17,7 +17,7 @@ function Chat() {
             <AppHeaderWithBackButton>
                 <UserItem displayName={data?.displayName ?? 'Loading...'} photoURL={data?.photoURL ?? ''} nickname={data?.nickname ?? ''} />
             </AppHeaderWithBackButton>
-            <div className="flex grow">
+            <div className="flex grow overflow-scroll">
                 <ChatMessages messages={data?.messages} />
             </div>
             <ChatFooter id={data?.id} />
