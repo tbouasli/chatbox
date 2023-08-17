@@ -9,7 +9,6 @@ import * as z from 'zod';
 
 import { auth, firestore, storage } from '@/lib/firebase';
 
-import FrontIcon from '@/shared/assets/icon/front.svg';
 import ImagePicker from '@/shared/components/molecule/ImagePicker';
 import { Button } from '@/shared/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/shared/components/ui/form';
@@ -140,7 +139,7 @@ function OnBoardingForm() {
                     Don’t worry, you can change <br /> your profile anytime!
                 </span>
                 <Button className="rounded-full absolute bottom-4 right-4 p-3" type="submit">
-                    <img className="text-primary-foreground" src={FrontIcon} alt="Back" height={16} width={16} />
+                    <img className="text-primary-foreground" src="/assets/icon/front.svg" alt="Back" height={16} width={16} />
                 </Button>
             </form>
         </Form>

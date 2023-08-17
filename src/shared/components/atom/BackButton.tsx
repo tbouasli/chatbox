@@ -1,13 +1,11 @@
 import { useNavigate } from 'react-router-dom';
 
-import BackIcon from '@/shared/assets/icon/back.svg';
-
 function BackButton() {
     const navigate = useNavigate();
 
     return (
         <button onClick={() => navigate(-1)}>
-            <img src={BackIcon} alt="Back" height={16} width={16} />
+            <img src="/assets/icon/back.svg" alt="Back" height={16} width={16} />
         </button>
     );
 }
