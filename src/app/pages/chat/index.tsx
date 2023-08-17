@@ -29,6 +29,11 @@ function Chat() {
         window.addEventListener('resize', onResize);
 
         return () => {
+            if (main && root) {
+                main.style.height = '100dvh';
+                root.style.height = '100dvh';
+            }
+
             window.removeEventListener('resize', onResize);
         };
     }, []);
