@@ -1,3 +1,4 @@
+import React from 'react';
 import { useParams } from 'react-router-dom';
 
 import AppHeaderWithBackButton from '@/shared/components/molecule/AppHeaderWithBackButton';
@@ -12,8 +13,28 @@ function Chat() {
 
     const { data, loading } = useChatData(id ?? 'as');
 
+    React.useEffect(() => {
+        const root = document.getElementById('root');
+        const main = document.getElementById('main');
+
+        const onResize = () => {
+            if (!main || !root) {
+                return;
+            }
+
+            main.style.height = `${window.visualViewport?.height ?? window.innerHeight}px`;
+            root.style.height = `${window.visualViewport?.height ?? window.innerHeight}px`;
+        };
+
+        window.addEventListener('resize', onResize);
+
+        return () => {
+            window.removeEventListener('resize', onResize);
+        };
+    }, []);
+
     return (
-        <main className="h-[100dvh] w-full flex flex-col">
+        <main className="h-[100dvh] w-full flex flex-col" id="main">
             <AppHeaderWithBackButton>
                 <UserItem
                     displayName={data?.displayName ?? 'Loading...'}

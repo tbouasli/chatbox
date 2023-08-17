@@ -58,7 +58,7 @@ function ChatFooter({ id }: ChatFooterProps) {
     };
 
     return (
-        <div className="flex gap-4 w-full p-2">
+        <div className="flex gap-4 w-full p-3">
             <Input placeholder="Type a message" value={content} onChange={(e) => setContent(e.target.value)} />
             <Button onClick={sendMessage}>Send</Button>
         </div>
