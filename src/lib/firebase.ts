@@ -17,5 +17,9 @@ const firebaseConfig = {
 export const app = initializeApp(firebaseConfig);
 export const analytics = isSupported().then((yes) => (yes ? getAnalytics(app) : null));
 export const auth = getAuth(app);
-export const firestore = initializeFirestore(app, { localCache: persistentLocalCache() });
+export const firestore = initializeFirestore(app, {
+    localCache: persistentLocalCache({
+        cacheSizeBytes: 1_000_000_000, // 1GB
+    }),
+});
 export const storage = getStorage(app);

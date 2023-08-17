@@ -1,4 +1,4 @@
-import { doc, getDoc, onSnapshot } from 'firebase/firestore';
+import { doc, getDoc, getDocFromCache, getDocFromServer, onSnapshot } from 'firebase/firestore';
 import React from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
 
@@ -18,61 +18,85 @@ export interface ChatDTO {
 }
 
 export default function useChatData(id: string) {
+    const [dataLoading, setDataLoading] = React.useState(true);
     const [data, setData] = React.useState<ChatDTO>();
     const [authUser, authUserLoading] = useAuthState(auth);
 
-    const getChatData = React.useCallback(async () => {
-        const chatRef = doc(firestore, 'chats', id);
-        const chatDoc = await getDoc(chatRef.withConverter(chatMapper));
+    const getChatData = React.useCallback(
+        async (from: 'cache' | 'server') => {
+            const chatRef = doc(firestore, 'chats', id);
+            const chatDoc =
+                from === 'cache'
+                    ? await getDocFromCache(chatRef.withConverter(chatMapper))
+                    : await getDocFromServer(chatRef.withConverter(chatMapper));
 
-        if (!chatDoc.exists()) {
-            throw new Error('Chat not found');
+            if (!chatDoc.exists()) {
+                throw new Error('Chat not found');
+            }
+
+            const chat = chatDoc.data();
+
+            const memberRef = chat.members?.find((member) => member.id !== authUser?.uid);
+
+            if (!memberRef) {
+                throw new Error('Member not found');
+            }
+
+            const memberDoc =
+                from === 'cache'
+                    ? await getDocFromCache(memberRef.withConverter(userMapper))
+                    : await getDocFromServer(memberRef.withConverter(userMapper));
+
+            if (!memberDoc.exists()) {
+                throw new Error('Member not found');
+            }
+
+            const memberData = memberDoc.data();
+
+            const messageRef = chat.messages;
+
+            const messageData = await Promise.all(
+                messageRef?.map(async (message) => {
+                    const messageDoc =
+                        from === 'cache'
+                            ? await getDocFromCache(message.withConverter(messageMapper))
+                            : await getDocFromServer(message.withConverter(messageMapper));
+
+                    if (!messageDoc.exists()) {
+                        return;
+                    }
+
+                    return messageDoc.data();
+                }) ?? [],
+            );
+
+            const filteredMessageData = messageData.filter((message) => message !== undefined) as Message[];
+
+            setData({
+                id: chat.id,
+                displayName: memberData.displayName,
+                nickname: memberData.nickname,
+                photoURL: memberData.photoURL,
+                messages: filteredMessageData,
+            });
+        },
+        [id, authUser?.uid],
+    );
+
+    const getData = React.useCallback(async () => {
+        try {
+            setDataLoading(true);
+            await getChatData('cache');
+        } catch {
+            await getChatData('server');
+        } finally {
+            setDataLoading(false);
         }
-
-        const chat = chatDoc.data();
-
-        const memberRef = chat.members?.find((member) => member.id !== authUser?.uid);
-
-        if (!memberRef) {
-            throw new Error('Member not found');
-        }
-
-        const memberDoc = await getDoc(memberRef.withConverter(userMapper));
-
-        if (!memberDoc.exists()) {
-            throw new Error('Member not found');
-        }
-
-        const memberData = memberDoc.data();
-
-        const messageRef = chat.messages;
-
-        const messageData = await Promise.all(
-            messageRef?.map(async (message) => {
-                const messageDoc = await getDoc(message.withConverter(messageMapper));
-
-                if (!messageDoc.exists()) {
-                    return;
-                }
-
-                return messageDoc.data();
-            }) ?? [],
-        );
-
-        const filteredMessageData = messageData.filter((message) => message !== undefined) as Message[];
-
-        setData({
-            id: chat.id,
-            displayName: memberData.displayName,
-            nickname: memberData.nickname,
-            photoURL: memberData.photoURL,
-            messages: filteredMessageData,
-        });
-    }, [id, authUser?.uid]);
+    }, [getChatData]);
 
     React.useEffect(() => {
-        getChatData();
-    }, [getChatData]);
+        getData();
+    }, [getData]);
 
     React.useEffect(() => {
         const unsubscribe = onSnapshot(doc(firestore, 'chats', id).withConverter(chatMapper), async (chatDoc) => {
@@ -115,5 +139,7 @@ export default function useChatData(id: string) {
         };
     }, [id]);
 
-    return { data, loading: authUserLoading };
+    const loading = authUserLoading || dataLoading;
+
+    return { data, loading };
 }

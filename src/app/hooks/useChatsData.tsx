@@ -1,4 +1,16 @@
-import { Timestamp, collection, doc, getDoc, getDocs, limit, orderBy, query, where } from 'firebase/firestore';
+import {
+    Timestamp,
+    collection,
+    doc,
+    getDocFromCache,
+    getDocFromServer,
+    getDocsFromCache,
+    getDocsFromServer,
+    limit,
+    orderBy,
+    query,
+    where,
+} from 'firebase/firestore';
 import React from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { useCollectionData } from 'react-firebase-hooks/firestore';
@@ -21,6 +33,7 @@ export interface ChatDTO {
 }
 
 export default function useChatsData() {
+    const [dataLoading, setDataLoading] = React.useState(true);
     const [data, setData] = React.useState<ChatDTO[] | null>(null);
     const [authUser, authUserLoading] = useAuthState(auth);
 
@@ -31,15 +44,18 @@ export default function useChatsData() {
 
     const [chatData, chatDataLoading] = useCollectionData(chatsQuery?.withConverter(chatMapper));
 
-    const getData = React.useCallback(
-        async (chat: Chat): Promise<ChatDTO> => {
+    const getChatData = React.useCallback(
+        async (chat: Chat, from: 'cache' | 'server'): Promise<ChatDTO> => {
             const memberRef = chat.members?.find((member) => member.id !== authUser?.uid);
 
             if (!memberRef) {
                 throw new Error('Member not found');
             }
 
-            const memberDoc = await getDoc(memberRef.withConverter(userMapper));
+            const memberDoc =
+                from === 'cache'
+                    ? await getDocFromCache(memberRef.withConverter(userMapper))
+                    : await getDocFromServer(memberRef.withConverter(userMapper));
 
             if (!memberDoc.exists()) {
                 throw new Error('Member not found');
@@ -51,7 +67,7 @@ export default function useChatsData() {
             const messageCollectionRef = collection(firestore, 'messages').withConverter(messageMapper);
             const messageQuery = query(messageCollectionRef, where('chat', '==', chatRef), orderBy('createdAt', 'desc'), limit(1));
 
-            const messageDocs = await getDocs(messageQuery);
+            const messageDocs = from === 'cache' ? await getDocsFromCache(messageQuery) : await getDocsFromServer(messageQuery);
 
             const lastMessageDoc = messageDocs.docs[0]?.data();
 
@@ -70,19 +86,32 @@ export default function useChatsData() {
         [authUser?.uid],
     );
 
-    React.useEffect(() => {
-        if (!chatData) {
-            return;
-        }
+    const getData = React.useCallback(async () => {
+        try {
+            setDataLoading(true);
+            if (!chatData) {
+                throw new Error('Chat data not found');
+            }
 
-        const getMemberDataPromises = chatData.map(getData);
+            const getMemberDataPromises = chatData.map((chat) => getChatData(chat, 'cache'));
+            const chats = await Promise.all(getMemberDataPromises);
 
-        Promise.all(getMemberDataPromises).then((chats) => {
             setData(chats);
-        });
-    }, [chatData, getData]);
+        } catch {
+            const getMemberDataPromises = chatData?.map((chat) => getChatData(chat, 'server'));
+            const chats = await Promise.all(getMemberDataPromises ?? []);
 
-    const loading = authUserLoading || chatDataLoading;
+            setData(chats);
+        } finally {
+            setDataLoading(false);
+        }
+    }, [chatData, getChatData]);
+
+    React.useEffect(() => {
+        getData();
+    }, [getData]);
+
+    const loading = authUserLoading || chatDataLoading || dataLoading;
 
     return { data, loading };
 }
