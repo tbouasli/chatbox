@@ -4,6 +4,8 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 
 import { auth, firestore } from '@/lib/firebase';
 
+import useLoadingBuffer from '@/shared/hooks/useLoadingBuffer';
+
 import { chatMapper } from '@/app/infra/mappers/ChatMapper';
 import { messageMapper } from '@/app/infra/mappers/MessageMapper';
 import { userMapper } from '@/app/infra/mappers/UserMapper';
@@ -18,9 +20,9 @@ export interface ChatDTO {
 }
 
 export default function useChatData(id: string) {
-    const [dataLoading, setDataLoading] = React.useState(true);
     const [data, setData] = React.useState<ChatDTO>();
     const [authUser, authUserLoading] = useAuthState(auth);
+    const { buffer: dataLoading, setLoading: setDataLoading } = useLoadingBuffer();
 
     const getChatData = React.useCallback(
         async (from: 'cache' | 'server') => {
