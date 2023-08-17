@@ -53,6 +53,8 @@ function ChatFooter({ id }: ChatFooterProps) {
         batch.set(chatRef.withConverter(chatMapper), chat);
 
         await batch.commit();
+
+        setContent('');
     };
 
     return (
