@@ -1,7 +1,7 @@
 import { getAnalytics, isSupported } from 'firebase/analytics';
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
-import { getFirestore, initializeFirestore, persistentLocalCache } from 'firebase/firestore';
+import { initializeFirestore, persistentLocalCache } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 
 const firebaseConfig = {
@@ -17,8 +17,5 @@ const firebaseConfig = {
 export const app = initializeApp(firebaseConfig);
 export const analytics = isSupported().then((yes) => (yes ? getAnalytics(app) : null));
 export const auth = getAuth(app);
-
-initializeFirestore(app, { localCache: persistentLocalCache() });
-
-export const firestore = getFirestore(app);
+export const firestore = initializeFirestore(app, { localCache: persistentLocalCache() });
 export const storage = getStorage(app);
