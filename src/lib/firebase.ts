@@ -2,6 +2,7 @@ import { getAnalytics, isSupported } from 'firebase/analytics';
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { initializeFirestore, persistentLocalCache } from 'firebase/firestore';
+import { getMessaging } from 'firebase/messaging';
 import { getStorage } from 'firebase/storage';
 
 const firebaseConfig = {
@@ -23,3 +24,17 @@ export const firestore = initializeFirestore(app, {
     }),
 });
 export const storage = getStorage(app);
+export const messaging = getMessaging(app);
+
+function requestPermission() {
+    alert('requesting permission');
+    Notification.requestPermission().then((permission) => {
+        if (permission === 'granted') {
+            alert('Notification permission granted.');
+        } else {
+            alert('Unable to get permission to notify.');
+        }
+    });
+}
+
+requestPermission();
