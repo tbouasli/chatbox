@@ -24,7 +24,7 @@ function SettingsItem({ iconSrc, content, href, onClick }: SettingsItemProps) {
 
     return (
         <ListItem className="border-y border-primary/30" onClick={handleOnClick}>
-            <img src={iconSrc} alt={content} height={16} width={16} />
+            <img src={iconSrc} alt={content} height={20} width={20} />
             <span>{content}</span>
         </ListItem>
     );

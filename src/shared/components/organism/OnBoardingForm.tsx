@@ -138,8 +138,8 @@ function OnBoardingForm() {
                 <span className="text-accent">
                     Don’t worry, you can change <br /> your profile anytime!
                 </span>
-                <Button className="rounded-full absolute bottom-4 right-4 p-3" type="submit">
-                    <img className="text-primary-foreground" src="/assets/icon/front.svg" alt="Back" height={16} width={16} />
+                <Button className="rounded-full absolute bottom-4 right-4 p-3 h-fit" type="submit">
+                    <img className="text-primary-foreground" src="/assets/icon/front.svg" alt="Back" height={24} width={24} />
                 </Button>
             </form>
         </Form>

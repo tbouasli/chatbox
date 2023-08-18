@@ -5,7 +5,7 @@ function BackButton() {
 
     return (
         <button onClick={() => navigate(-1)}>
-            <img src="/assets/icon/back.svg" alt="Back" height={16} width={16} />
+            <img src="/assets/icon/back.svg" alt="Back" height={24} width={24} />
         </button>
     );
 }

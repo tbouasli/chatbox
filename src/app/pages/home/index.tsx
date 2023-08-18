@@ -9,8 +9,8 @@ function Home() {
         <main className="h-full w-full flex flex-col">
             <ChatsHeader />
             <Link to="/app/friends">
-                <Button className="rounded-full absolute bottom-4 right-4 p-3">
-                    <img className="text-primary-foreground" src="/assets/icon/chat-light.svg" alt="Back" height={16} width={16} />
+                <Button className="rounded-full absolute bottom-4 right-4 p-4 h-fit">
+                    <img className="text-primary-foreground" src="/assets/icon/chat-light.svg" alt="Back" height={24} width={24} />
                 </Button>
             </Link>
             <ChatList />
