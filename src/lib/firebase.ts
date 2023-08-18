@@ -38,7 +38,7 @@ function requestPermission() {
 }
 
 onMessage(messaging, (payload) => {
-    alert('Message received. ', payload);
+    alert(`Message received. ${JSON.stringify(payload)}`);
     // ...
 });
 
