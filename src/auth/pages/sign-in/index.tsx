@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom';
+
 import ChatBoxLogoWithTitle from '@/shared/components/molecule/ChatBoxLogoWithTitle';
 import DividerWithInfix from '@/shared/components/molecule/Divider';
 import SignInForm from '@/shared/components/organism/SignInForm';
@@ -12,6 +14,12 @@ function SignIn() {
             <SignInForm />
             <DividerWithInfix infix="or" />
             <SocialLogin />
+            <span className="text-xs text-center">
+                Doesn’t have an account?{' '}
+                <Link className="text-secondary" to="/auth/sign-up">
+                    Sign Up
+                </Link>
+            </span>
         </main>
     );
 }
