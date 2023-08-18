@@ -2,7 +2,7 @@ import { getAnalytics, isSupported } from 'firebase/analytics';
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { initializeFirestore, persistentLocalCache } from 'firebase/firestore';
-import { getMessaging } from 'firebase/messaging';
+import { getMessaging, onMessage } from 'firebase/messaging';
 import { getStorage } from 'firebase/storage';
 
 const firebaseConfig = {
@@ -36,5 +36,10 @@ function requestPermission() {
         }
     });
 }
+
+onMessage(messaging, (payload) => {
+    alert('Message received. ', payload);
+    // ...
+});
 
 requestPermission();
