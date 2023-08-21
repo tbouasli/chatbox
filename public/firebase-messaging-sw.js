@@ -2,13 +2,13 @@ importScripts('https://www.gstatic.com/firebasejs/8.2.9/firebase-app.js');
 importScripts('https://www.gstatic.com/firebasejs/8.2.9/firebase-messaging.js');
 
 const firebaseConfig = {
-    apiKey: 'AIzaSyDibFALHCXaw_WE0hOmLSZlr3DD1zMRXCo',
-    authDomain: 'chatbox-a1493.firebaseapp.com',
-    projectId: 'chatbox-a1493',
-    storageBucket: 'chatbox-a1493.appspot.com',
-    messagingSenderId: '569522095892',
-    appId: '1:569522095892:web:020d59e438156a0f52a401',
-    measurementId: 'G-1XZ5579XRJ',
+    apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+    authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+    projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+    storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+    appId: import.meta.env.VITE_FIREBASE_APP_ID,
+    measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
 };
 
 // Initialize Firebase
