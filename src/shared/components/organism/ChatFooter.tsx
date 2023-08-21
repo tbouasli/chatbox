@@ -49,8 +49,6 @@ function ChatFooter({ id }: ChatFooterProps) {
 
         batch.set(messageRef, message);
 
-        console.log(chat);
-
         batch.update(chatRef, {
             //TODO fix this shit, use the domain model to perform this
             lastMessage: {
@@ -68,6 +66,8 @@ function ChatFooter({ id }: ChatFooterProps) {
         });
 
         await batch.commit();
+
+        //TODO dispatch push notification
 
         setContent('');
     };

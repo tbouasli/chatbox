@@ -8,8 +8,6 @@ function ChatList() {
     const { chats, user } = useAppData();
     const navigate = useNavigate();
 
-    console.log(chats.data);
-
     return chats.data?.map((chat) => {
         if (!user.data?.id) return;
 
