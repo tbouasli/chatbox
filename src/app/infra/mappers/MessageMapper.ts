@@ -8,8 +8,8 @@ class MessageMapper implements FirestoreDataConverter<Message> {
         return new Message({
             id: snapshot.id,
             content: data.content,
-            chat: data.chat,
-            sender: data.sender,
+            senderId: data.senderId,
+            read: data.read ?? false,
             createdAt: data.createdAt,
         });
     }
@@ -17,8 +17,8 @@ class MessageMapper implements FirestoreDataConverter<Message> {
     toFirestore(message: Message): DocumentData {
         return {
             content: message.content,
-            chat: message.chat,
-            sender: message.sender,
+            senderId: message.senderId,
+            read: message.read,
             createdAt: message.createdAt,
         };
     }

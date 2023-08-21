@@ -1,4 +1,4 @@
-import { addDoc, collection, doc, getDocs, query, where } from 'firebase/firestore';
+import { Timestamp, addDoc, collection, doc, getDoc, getDocs, query, where } from 'firebase/firestore';
 import React from 'react';
 
 import { firestore } from '@/lib/firebase';
@@ -25,8 +25,33 @@ export default function useCreateChat() {
 
             if (chatQuerySnapshot.docs.length > 0) return;
 
+            const friendDoc = await getDoc(friendRef);
+            const selfDoc = await getDoc(selfRef);
+
+            if (!friendDoc.exists() || !selfDoc.exists()) return;
+
+            const friendData = friendDoc.data();
+            const selfData = selfDoc.data();
+
             const chat = new Chat({
-                members: [friendRef, selfRef],
+                members: [friendDoc.id, selfDoc.id],
+                visual: {
+                    [friendDoc.id]: {
+                        displayName: selfData?.displayName,
+                        photoURL: selfData?.photoURL,
+                        unreadMessages: 0,
+                    },
+                    [selfDoc.id]: {
+                        displayName: friendData?.displayName,
+                        photoURL: friendData?.photoURL,
+                        unreadMessages: 0,
+                    },
+                },
+                lastMessage: {
+                    content: 'New Chat',
+                    senderId: 'system',
+                    timestamp: Timestamp.now(),
+                },
             });
 
             const docRef = collection(firestore, 'chats').withConverter(chatMapper);

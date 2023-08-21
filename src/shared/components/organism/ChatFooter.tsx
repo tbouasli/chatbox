@@ -24,33 +24,48 @@ function ChatFooter({ id }: ChatFooterProps) {
             return;
         }
 
-        const chatRef = doc(firestore, 'chats', id);
-        const userRef = doc(firestore, 'users', user.data?.id);
+        const chatRef = doc(firestore, 'chats', id).withConverter(chatMapper);
 
-        const chatDoc = await getDoc(chatRef.withConverter(chatMapper));
+        const message = new Message({
+            content: content,
+            createdAt: Timestamp.now(),
+            senderId: user.data?.id,
+            read: false,
+        });
 
-        if (!chatDoc.exists()) {
-            return;
-        }
+        const chatDoc = await getDoc(chatRef);
+
+        if (!chatDoc.exists()) return; //TODO handle error
 
         const chat = chatDoc.data();
 
-        const message = new Message({
-            chat: chatRef,
-            content: content,
-            createdAt: Timestamp.now(),
-            sender: userRef,
-        });
+        const otherMemberId = chat.getOtherMemberId(user.data?.id);
 
-        const messageRef = doc(firestore, 'messages', message.id);
+        if (!otherMemberId) return; //TODO handle error
 
-        chat.addMessage(messageRef);
+        const messageRef = doc(firestore, 'chats', id, 'messages', message.id).withConverter(messageMapper);
 
         const batch = writeBatch(firestore);
 
-        batch.set(messageRef.withConverter(messageMapper), message);
+        batch.set(messageRef, message);
 
-        batch.set(chatRef.withConverter(chatMapper), chat);
+        console.log(chat);
+
+        batch.update(chatRef, {
+            //TODO fix this shit, use the domain model to perform this
+            lastMessage: {
+                senderId: message.senderId,
+                content: message.content,
+                timestamp: message.createdAt,
+            },
+            visual: {
+                ...chat.visual,
+                [otherMemberId]: {
+                    ...chat.visual[otherMemberId],
+                    unreadMessages: chat.visual[otherMemberId].unreadMessages + 1,
+                },
+            },
+        });
 
         await batch.commit();
 

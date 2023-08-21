@@ -23,14 +23,12 @@ function UserItem({ displayName, nickname, photoURL, loading, children, onClick 
             </ListItem>
         );
 
-    if (!nickname) return null;
-
     return (
         <ListItem onClick={onClick}>
             <UserImage src={photoURL} loading={loading} />
             <div className="flex flex-col grow overflow-hidden">
                 <p className="text-base font-semibold truncate">{displayName}</p>
-                <p className="text-sm text-gray-500">@{nickname}</p>
+                {nickname && <p className="text-sm text-gray-500">@{nickname}</p>}
             </div>
             {children}
         </ListItem>

@@ -8,14 +8,16 @@ class ChatMapper implements FirestoreDataConverter<Chat> {
         return new Chat({
             id: snapshot.id,
             members: data.members,
-            messages: data.messages,
+            lastMessage: data.lastMessage,
+            visual: data.visual,
         });
     }
 
     toFirestore(chat: Chat): DocumentData {
         return {
             members: chat.members,
-            messages: chat.messages,
+            lastMessage: chat.lastMessage,
+            visual: chat.visual,
         };
     }
 }

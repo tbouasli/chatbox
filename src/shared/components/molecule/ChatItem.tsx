@@ -12,6 +12,7 @@ interface ChatItemProps {
     lastMessageTimestamp?: Timestamp;
     loading?: boolean;
     children?: React.ReactNode;
+    unreadMessages?: number;
 }
 
 const { format } = Intl.DateTimeFormat('pt-BR', {
@@ -20,7 +21,7 @@ const { format } = Intl.DateTimeFormat('pt-BR', {
     year: 'numeric',
 });
 
-function ChatItem({ displayName, lastMessage, lastMessageTimestamp, photoURL, loading, children, onClick }: ChatItemProps) {
+function ChatItem({ displayName, lastMessage, lastMessageTimestamp, photoURL, loading, children, onClick, unreadMessages }: ChatItemProps) {
     if (loading)
         return (
             <ListItem className="animate-pulse">
@@ -42,7 +43,12 @@ function ChatItem({ displayName, lastMessage, lastMessageTimestamp, photoURL, lo
                     <span className="text-base font-semibold truncate">{displayName}</span>
                     {lastMessageTimestamp && <span className="text-xs text-gray-500">{format(lastMessageTimestamp.toDate())}</span>}
                 </div>
-                <span className="text-sm text-gray-500">{lastMessage ?? 'New chat!'}</span>
+                <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-500">{lastMessage ?? 'New chat!'}</span>
+                    {unreadMessages !== undefined && unreadMessages > 0 && (
+                        <span className="bg-primary rounded-full text-primary-foreground text-xs px-1">{unreadMessages}</span>
+                    )}
+                </div>
             </div>
             {children}
         </ListItem>
