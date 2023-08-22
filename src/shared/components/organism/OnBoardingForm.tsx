@@ -34,8 +34,6 @@ const FormSchema = z.object({
 });
 
 function OnBoardingForm() {
-    Notification.requestPermission();
-
     const navigate = useNavigate();
     const { toast } = useToast();
     const [user] = useAuthState(auth);
@@ -46,75 +44,87 @@ function OnBoardingForm() {
     });
 
     React.useEffect(() => {
+        Notification.requestPermission();
+    }, []);
+
+    React.useEffect(() => {
         if (user?.displayName && form.getValues('displayName') === undefined) {
             form.setValue('displayName', user.displayName);
         }
     }, [user, form]);
 
     async function getFCMToken() {
-        return getToken(messaging, {
-            vapidKey: 'BJvafJPTL1fBaCyiIbi8W2n8FIh5Tr28iZaiEBZGCutGwB2JExrLg8dmVRY-N5hqmROvI2jKC7BDk2LCEr1a668',
-        });
+        try {
+            return await getToken(messaging, {
+                vapidKey: 'BJvafJPTL1fBaCyiIbi8W2n8FIh5Tr28iZaiEBZGCutGwB2JExrLg8dmVRY-N5hqmROvI2jKC7BDk2LCEr1a668',
+            });
+        } catch (e) {
+            return 'no-token';
+        }
     }
 
     async function onSubmit(values: z.infer<typeof FormSchema>) {
-        if (!user) {
-            toast({
-                title: 'Error',
-                description: 'Please login first.',
+        try {
+            if (!user) {
+                toast({
+                    title: 'Error',
+                    description: 'Please login first.',
+                });
+                return;
+            }
+
+            if (!image && !user?.photoURL) {
+                toast({
+                    title: 'Error',
+                    description: 'Please upload a profile picture.',
+                });
+                return;
+            }
+            const storageRef = ref(storage, `users/profile-picture/${user.uid}`);
+
+            if (image) {
+                await uploadBytes(storageRef, image);
+            }
+
+            const downloadURL = image ? await getDownloadURL(storageRef) : (user.photoURL as string);
+
+            const token = await getFCMToken();
+
+            const userEntity = new User({
+                id: user.uid,
+                displayName: values.displayName,
+                nickname: values.nickname,
+                photoURL: downloadURL,
+                fcmToken: token,
             });
-            return;
-        }
 
-        if (!image && !user?.photoURL) {
-            toast({
-                title: 'Error',
-                description: 'Please upload a profile picture.',
+            const userDocRef = doc(firestore, 'users', user.uid);
+            const indexDocRef = doc(firestore, 'index', 'user', 'nickname', userEntity.nickname);
+
+            const indexDoc = await getDoc(indexDocRef);
+
+            if (indexDoc.exists()) {
+                toast({
+                    title: 'Error',
+                    description: 'Nickname already taken.',
+                });
+                return;
+            }
+
+            const batch = writeBatch(firestore);
+
+            batch.set(userDocRef.withConverter(userMapper), userEntity);
+
+            batch.set(indexDocRef, {
+                ref: userDocRef,
             });
-            return;
+
+            await batch.commit();
+
+            navigate('/app');
+        } catch (e) {
+            console.log(e);
         }
-        const storageRef = ref(storage, `users/profile-picture/${user.uid}`);
-
-        if (image) {
-            await uploadBytes(storageRef, image);
-        }
-
-        const downloadURL = image ? await getDownloadURL(storageRef) : (user.photoURL as string);
-
-        const token = await getFCMToken();
-
-        const userEntity = new User({
-            id: user.uid,
-            displayName: values.displayName,
-            nickname: values.nickname,
-            photoURL: downloadURL,
-            fcmToken: token,
-        });
-
-        const userDocRef = doc(firestore, 'users', user.uid);
-        const indexDocRef = doc(firestore, 'index', 'user', 'nickname', userEntity.nickname);
-
-        const indexDoc = await getDoc(indexDocRef);
-
-        if (indexDoc.exists()) {
-            toast({
-                title: 'Error',
-                description: 'Nickname already taken.',
-            });
-            return;
-        }
-
-        const batch = writeBatch(firestore);
-
-        batch.set(userDocRef.withConverter(userMapper), userEntity);
-
-        batch.set(indexDocRef, {
-            ref: userDocRef,
-        });
-
-        await batch.commit();
-
-        navigate('/app');
     }
 
     return (
