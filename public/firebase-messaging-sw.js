@@ -10,7 +10,6 @@ const firebaseConfig = {
     appId: import.meta.env.VITE_FIREBASE_APP_ID,
     measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
 };
-
 // Initialize Firebase
 const firebaseApp = firebase.initializeApp(firebaseConfig);
 
@@ -19,8 +18,6 @@ const firebaseApp = firebase.initializeApp(firebaseConfig);
 const messaging = firebaseApp.messaging();
 
 messaging.onBackgroundMessage(messaging, (payload) => {
-    console.log('[firebase-messaging-sw.js] Received background message ', payload);
-    // Customize notification here
     const notificationTitle = 'Background Message Title';
     const notificationOptions = {
         body: 'Background Message body.',

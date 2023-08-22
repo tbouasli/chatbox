@@ -14,6 +14,8 @@ export default function useChatsData() {
 
     const getChats = React.useCallback(
         async (from: 'cache' | 'server') => {
+            if (!authUser?.uid) return;
+
             const chatsRef = collection(firestore, 'chats').withConverter(chatMapper);
 
             const chatsQuery = query(chatsRef, where('members', 'array-contains', authUser?.uid));

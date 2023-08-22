@@ -1,7 +1,8 @@
 {
   "projects": {
-    "default": "chatbox-a1493",
-    "development": "chatbox-dev-f610d"
+    "development": "chatbox-dev-f610d",
+    "production": "chatbox-a1493",
+    "default": "chatbox-dev-f610d"
   },
   "targets": {},
   "etags": {}

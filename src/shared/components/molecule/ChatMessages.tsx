@@ -12,15 +12,7 @@ interface ChatMessagesProps {
 function ChatMessages({ id }: ChatMessagesProps) {
     const { user } = useAppData();
 
-    const { data, loading } = useChatMessages(id ?? 'loading'); //TODO add error handling
-
-    if (loading) {
-        return (
-            <div className="w-full flex items-center justify-center">
-                <Loader2 size={64} className="text-gray-500 animate-spin" />
-            </div>
-        );
-    }
+    const { data } = useChatMessages(id ?? 'loading'); //TODO add error handling
 
     return (
         <div className="flex flex-col gap-2 p-2 w-full">

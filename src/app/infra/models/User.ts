@@ -5,6 +5,7 @@ interface UserProps {
     displayName: string;
     nickname: string;
     photoURL: string;
+    fcmToken?: string;
     chats?: DocumentReference[];
     friends?: DocumentReference[];
     friendRequestsReceived?: DocumentReference[];
@@ -15,6 +16,7 @@ export class User implements UserProps {
     displayName: string;
     nickname: string;
     photoURL: string;
+    fcmToken?: string;
     chats: DocumentReference[];
     friends: DocumentReference[];
     friendRequestsReceived: DocumentReference[];
@@ -24,6 +26,7 @@ export class User implements UserProps {
         this.displayName = props.displayName;
         this.nickname = props.nickname;
         this.photoURL = props.photoURL;
+        this.fcmToken = props.fcmToken;
         this.chats = props.chats || [];
         this.friends = props.friends || [];
         this.friendRequestsReceived = props.friendRequestsReceived || [];

@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { doc, getDoc, writeBatch } from 'firebase/firestore';
+import { getToken } from 'firebase/messaging';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import React from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
@@ -7,7 +8,7 @@ import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import * as z from 'zod';
 
-import { auth, firestore, storage } from '@/lib/firebase';
+import { auth, firestore, messaging, storage } from '@/lib/firebase';
 
 import ImagePicker from '@/shared/components/molecule/ImagePicker';
 import { Button } from '@/shared/components/ui/button';
@@ -33,6 +34,8 @@ const FormSchema = z.object({
 });
 
 function OnBoardingForm() {
+    Notification.requestPermission();
+
     const navigate = useNavigate();
     const { toast } = useToast();
     const [user] = useAuthState(auth);
@@ -47,6 +50,12 @@ function OnBoardingForm() {
             form.setValue('displayName', user.displayName);
         }
     }, [user, form]);
+
+    async function getFCMToken() {
+        return getToken(messaging, {
+            vapidKey: 'BJvafJPTL1fBaCyiIbi8W2n8FIh5Tr28iZaiEBZGCutGwB2JExrLg8dmVRY-N5hqmROvI2jKC7BDk2LCEr1a668',
+        });
+    }
 
     async function onSubmit(values: z.infer<typeof FormSchema>) {
         if (!user) {
@@ -72,11 +81,14 @@ function OnBoardingForm() {
 
         const downloadURL = image ? await getDownloadURL(storageRef) : (user.photoURL as string);
 
+        const token = await getFCMToken();
+
         const userEntity = new User({
             id: user.uid,
             displayName: values.displayName,
             nickname: values.nickname,
             photoURL: downloadURL,
+            fcmToken: token,
         });
 
         const userDocRef = doc(firestore, 'users', user.uid);

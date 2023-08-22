@@ -1,7 +1,7 @@
 import { getAnalytics, isSupported } from 'firebase/analytics';
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
-import { initializeFirestore, persistentLocalCache } from 'firebase/firestore';
+import { connectFirestoreEmulator, getFirestore } from 'firebase/firestore';
 import { getMessaging } from 'firebase/messaging';
 import { getStorage } from 'firebase/storage';
 
@@ -15,15 +15,14 @@ const firebaseConfig = {
     measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
 };
 
-const cache = persistentLocalCache({
-    cacheSizeBytes: 1_000_000_000, // 1GB
-});
-
-Notification.requestPermission();
-
 export const app = initializeApp(firebaseConfig);
 export const analytics = isSupported().then((yes) => (yes ? getAnalytics(app) : null));
 export const auth = getAuth(app);
-export const firestore = initializeFirestore(app, { localCache: cache });
+export const firestore = getFirestore(app);
 export const storage = getStorage(app);
 export const messaging = getMessaging(app);
+
+if (import.meta.env.VITE_FIREBASE_USE_EMULATOR === 'true') {
+    console.log('Using Firebase Emulator');
+    connectFirestoreEmulator(firestore, 'localhost', 8080);
+}
