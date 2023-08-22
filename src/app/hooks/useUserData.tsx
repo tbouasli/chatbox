@@ -1,8 +1,9 @@
-import { doc, getDocFromCache, getDocFromServer, onSnapshot } from 'firebase/firestore';
+import { doc, getDocFromCache, getDocFromServer, onSnapshot, updateDoc } from 'firebase/firestore';
+import { getToken } from 'firebase/messaging';
 import React from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
 
-import { auth, firestore } from '@/lib/firebase';
+import { auth, firestore, messaging } from '@/lib/firebase';
 
 import { userMapper } from '@/app/infra/mappers/UserMapper';
 
@@ -14,6 +15,16 @@ export default function useUserData() {
     const [authUser, authUserLoading] = useAuthState(auth);
     const userDocRef = React.useMemo(() => doc(firestore, 'users', authUser?.uid ?? 'loading'), [authUser]);
 
+    async function getFCMToken() {
+        try {
+            return await getToken(messaging, {
+                vapidKey: 'BJvafJPTL1fBaCyiIbi8W2n8FIh5Tr28iZaiEBZGCutGwB2JExrLg8dmVRY-N5hqmROvI2jKC7BDk2LCEr1a668',
+            });
+        } catch (e) {
+            return 'no-token';
+        }
+    }
+
     const getData = React.useCallback(
         async (from: 'cache' | 'server') => {
             const userDoc =
@@ -23,6 +34,12 @@ export default function useUserData() {
 
             if (userDoc.exists()) {
                 setData(userDoc.data());
+
+                const token = await getFCMToken(); //TODO: move to a better place and allow for multiple device tokens
+
+                await updateDoc(userDocRef, {
+                    fcmToken: token,
+                });
             }
         },
         [userDocRef],
