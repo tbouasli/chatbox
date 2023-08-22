@@ -1,5 +1,3 @@
-import { Loader2 } from 'lucide-react';
-
 import MessageComponent from '@/shared/components/atom/Message';
 
 import useAppData from '@/app/hooks/useAppData';
