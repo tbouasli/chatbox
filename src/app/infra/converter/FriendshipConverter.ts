@@ -8,6 +8,7 @@ class FriendshipConverter implements FirestoreDataConverter<Friendship> {
         return Friendship.existing({
             id: snapshot.id,
             status: data.status,
+            senderId: data.senderId,
             users: data.users,
             createdAt: data.createdAt?.toDate(),
         });
@@ -16,6 +17,7 @@ class FriendshipConverter implements FirestoreDataConverter<Friendship> {
     toFirestore(friendship: Friendship): DocumentData {
         return {
             status: friendship.status,
+            senderId: friendship.senderId,
             users: friendship.users,
             createdAt: friendship.createdAt,
         };
