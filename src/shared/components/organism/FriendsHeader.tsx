@@ -10,7 +10,7 @@ function FriendsHeader() {
             <div className="flex items-center justify-between w-full">
                 <Title text="Friends" />
                 <div className="flex items-center gap-2">
-                    <Link to="/app/friends/add">
+                    <Link to="/app/friends/search">
                         <UserPlus className="text-primary" height={24} width={24} />
                     </Link>
                 </div>

@@ -2,7 +2,7 @@ import { DocumentData, FirestoreDataConverter, QueryDocumentSnapshot, SnapshotOp
 
 import { Index } from '@/app/infra/models/Index';
 
-class IndexMapper implements FirestoreDataConverter<Index> {
+class IndexConverter implements FirestoreDataConverter<Index> {
     fromFirestore(snapshot: QueryDocumentSnapshot<DocumentData, DocumentData>, options?: SnapshotOptions | undefined): Index {
         const data = snapshot.data(options);
         return new Index({
@@ -18,4 +18,4 @@ class IndexMapper implements FirestoreDataConverter<Index> {
     }
 }
 
-export const indexMapper = new IndexMapper();
+export const indexConverter = new IndexConverter();

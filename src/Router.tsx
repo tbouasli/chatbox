@@ -1,17 +1,17 @@
 import { Navigate, Route, RouterProvider, createBrowserRouter, createRoutesFromElements } from 'react-router-dom';
 
-import Chat from './app/pages/chat';
+import ChatPage from './app/pages/chat';
 import ErrorPage from './app/pages/error';
-import Friends from './app/pages/friends';
-import AddFriends from './app/pages/friends/add';
-import FriendRequests from './app/pages/friends/requests';
-import Home from './app/pages/home';
-import OnBoarding from './app/pages/on-boarding';
-import Settings from './app/pages/settings';
+import FriendsPage from './app/pages/friends';
+import FriendRequestsPage from './app/pages/friends/requests';
+import SearchUserPage from './app/pages/friends/search';
+import HomePage from './app/pages/home';
+import OnBoardingPage from './app/pages/on-boarding';
+import SettingsPage from './app/pages/settings';
 import WorkInProgressPage from './app/pages/wip';
 import { AppDataProvider } from './app/provider/AppData';
-import SignIn from './auth/pages/sign-in';
-import SignUp from './auth/pages/sign-up';
+import SignInPage from './auth/pages/sign-in';
+import SignUpPage from './auth/pages/sign-up';
 import AuthRoute from './shared/components/HOC/AuthRoute';
 
 const router = createBrowserRouter(
@@ -19,8 +19,8 @@ const router = createBrowserRouter(
         <Route path="/" errorElement={<ErrorPage />}>
             <Route path="" element={<Navigate to="/app" />} />
             <Route path="auth" element={<AuthRoute redirectIf="authenticated" redirectTo="/app" />}>
-                <Route path="sign-in" element={<SignIn />} />
-                <Route path="sign-up" element={<SignUp />} />
+                <Route path="sign-in" element={<SignInPage />} />
+                <Route path="sign-up" element={<SignUpPage />} />
             </Route>
             <Route
                 path="app"
@@ -30,18 +30,22 @@ const router = createBrowserRouter(
                     </AppDataProvider>
                 }
             >
-                <Route path="" element={<Home />} />
+                <Route path="" element={<HomePage />} />
+                <Route path="friends">
+                    <Route path="" element={<FriendsPage />} />
+                    <Route path="search" element={<SearchUserPage />} />
+                    <Route path="requests" element={<FriendRequestsPage />} />
+                </Route>
                 <Route path="settings">
-                    <Route path="" element={<Settings />} />
+                    <Route path="" element={<SettingsPage />} />
                     <Route path="profile" element={<WorkInProgressPage />} />
                     <Route path="notifications" element={<WorkInProgressPage />} />
                 </Route>
-                <Route path="friends" element={<Friends />} />
-                <Route path="friends/add" element={<AddFriends />} />
-                <Route path="friends/requests" element={<FriendRequests />} />
-                <Route path="chat/:id" element={<Chat />} />
+                <Route path="chat">
+                    <Route path=":chatId" element={<ChatPage />} />
+                </Route>
             </Route>
-            <Route path="on-boarding" element={<OnBoarding />} />
+            <Route path="on-boarding" element={<OnBoardingPage />} />
         </Route>,
     ),
 );

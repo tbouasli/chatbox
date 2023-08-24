@@ -1,16 +1,12 @@
-import FriendRequestItem from '@/shared/components/molecule/FriendRequestItem';
+import FriendRequestList from '@/shared/components/organism/FriendRequestList';
 import FriendsRequestsHeader from '@/shared/components/organism/FriendRequestsHeader';
 
-import useFriendRequestsData from '@/app/hooks/useFriendRequestsData';
-
-function FriendRequests() {
-    const { data } = useFriendRequestsData();
-
+function FriendRequestsPage() {
     return (
-        <main className="h-full w-full flex flex-col">
+        <main className="page">
             <FriendsRequestsHeader />
-            <div>{data?.map((d) => <FriendRequestItem friendRequest={d} loading={false} />)}</div>
+            <FriendRequestList />
         </main>
     );
 }
-export default FriendRequests;
+export default FriendRequestsPage;

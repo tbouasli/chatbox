@@ -2,14 +2,13 @@ import FriendRequests from '@/shared/components/molecule/FriendRequests';
 import FriendList from '@/shared/components/organism/FriendList';
 import FriendsHeader from '@/shared/components/organism/FriendsHeader';
 
-function Friends() {
+function FriendsPage() {
     return (
-        <main className="h-full w-full flex flex-col">
+        <main className="page">
             <FriendsHeader />
             <FriendRequests />
             <FriendList />
         </main>
     );
 }
-
-export default Friends;
+export default FriendsPage;

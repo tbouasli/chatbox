@@ -2,7 +2,7 @@ import { DocumentData, FirestoreDataConverter, QueryDocumentSnapshot, SnapshotOp
 
 import { User } from '@/app/infra/models/User';
 
-class UserMapper implements FirestoreDataConverter<User> {
+class UserConverter implements FirestoreDataConverter<User> {
     fromFirestore(snapshot: QueryDocumentSnapshot<DocumentData, DocumentData>, options?: SnapshotOptions | undefined): User {
         const data = snapshot.data(options);
         return new User({
@@ -10,9 +10,6 @@ class UserMapper implements FirestoreDataConverter<User> {
             displayName: data.displayName,
             nickname: data.nickname,
             photoURL: data.photoURL,
-            chats: data.chats,
-            friends: data.friends,
-            friendRequestsReceived: data.friendRequestsReceived,
         });
     }
 
@@ -21,11 +18,8 @@ class UserMapper implements FirestoreDataConverter<User> {
             displayName: user.displayName,
             nickname: user.nickname,
             photoURL: user.photoURL,
-            chats: user.chats,
-            friends: user.friends,
-            friendRequestsReceived: user.friendRequestsReceived,
         };
     }
 }
 
-export const userMapper = new UserMapper();
+export const userConverter = new UserConverter();

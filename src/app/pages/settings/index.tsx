@@ -5,15 +5,14 @@ import { auth } from '@/lib/firebase';
 import SettingsItem from '@/shared/components/molecule/SettingsItem';
 import SettingsHeader from '@/shared/components/organism/SettingsHeader';
 
-function Settings() {
+function SettingsPage() {
     return (
-        <main className="h-full w-full flex flex-col">
+        <main className="page">
             <SettingsHeader />
-            <SettingsItem href="/app/settings/profile" iconSrc="/assets/icon/smile.svg" content="Change Profile Info" />
-            <SettingsItem href="/app/settings/notifications" iconSrc="/assets/icon/chat.svg" content="Notifications" />
-            <SettingsItem onClick={() => signOut(auth)} iconSrc="/assets/icon/exit.svg" content="Sign Out" />
+            <SettingsItem iconSrc="/assets/icon/smile.svg" content="Change Profile Info" href="/app/settings/profile" />
+            <SettingsItem iconSrc="/assets/icon/chat.svg" content="Notifications" href="/app/settings/notifications" />
+            <SettingsItem iconSrc="/assets/icon/exit.svg" content="Sign Out" onClick={() => signOut(auth)} />
         </main>
     );
 }
-
-export default Settings;
+export default SettingsPage;

@@ -1,61 +1,69 @@
-import { doc, getDocFromCache, getDocFromServer, onSnapshot } from 'firebase/firestore';
+import { doc, getDoc, onSnapshot } from 'firebase/firestore';
 import React from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
 
 import { auth, firestore } from '@/lib/firebase';
 
-import { userMapper } from '@/app/infra/mappers/UserMapper';
+import { userConverter } from '@/app/infra/converter/UserConverter';
 
 import { User } from '../infra/models/User';
 
+export interface UserData {
+    data?: User | null;
+    loading: boolean;
+}
+
 export default function useUserData() {
-    const [dataLoading, setDataLoading] = React.useState(true);
+    const [dataLoading, setDataLoading] = React.useState<boolean>(true);
     const [data, setData] = React.useState<User>();
     const [authUser, authUserLoading] = useAuthState(auth);
-    const userDocRef = React.useMemo(() => doc(firestore, 'users', authUser?.uid ?? 'loading'), [authUser]);
 
-    const getData = React.useCallback(
-        async (from: 'cache' | 'server') => {
-            const userDoc =
-                from === 'cache'
-                    ? await getDocFromCache(userDocRef.withConverter(userMapper))
-                    : await getDocFromServer(userDocRef.withConverter(userMapper));
+    const initiallyLoadUser = React.useCallback(async () => {
+        setDataLoading(true);
+        if (!authUser?.uid) return;
 
-            if (userDoc.exists()) {
-                setData(userDoc.data());
-            }
-        },
-        [userDocRef],
-    );
+        const docRef = doc(firestore, 'users', authUser.uid).withConverter(userConverter);
 
-    const getInitialData = React.useCallback(async () => {
-        try {
-            setDataLoading(true);
-            await getData('cache');
-        } catch (error) {
-            await getData('server');
-        } finally {
-            setDataLoading(false);
+        const userDoc = await getDoc(docRef);
+
+        if (userDoc.exists()) {
+            setData(userDoc.data());
         }
-    }, [getData]);
 
-    const getDataUpdates = React.useCallback(() => {
-        return onSnapshot(userDocRef.withConverter(userMapper), (userDoc) => {
-            if (userDoc.exists()) {
-                setData(userDoc.data());
-            }
-        });
-    }, [userDocRef]);
+        setDataLoading(false);
+    }, [authUser?.uid, setDataLoading]);
+
+    const subscribeToUser = React.useCallback(() => {
+        if (!authUser?.uid) return;
+        setDataLoading(true);
+
+        const docRef = doc(firestore, 'users', authUser.uid);
+
+        return onSnapshot(
+            docRef.withConverter(userConverter),
+            async (userDoc) => {
+                if (userDoc.exists()) {
+                    setData(userDoc.data());
+                }
+                setDataLoading(false);
+            },
+            () => {
+                setDataLoading(false);
+            },
+        );
+    }, [authUser?.uid, setDataLoading]);
 
     React.useEffect(() => {
-        if (authUser) {
-            getInitialData();
-            const unsub = getDataUpdates();
-            return () => unsub();
-        } else {
-            setData(undefined);
-        }
-    }, [authUser, getInitialData, getDataUpdates]);
+        initiallyLoadUser();
+    }, [initiallyLoadUser]);
+
+    React.useEffect(() => {
+        const unsubscribe = subscribeToUser();
+
+        return () => {
+            unsubscribe && unsubscribe();
+        };
+    }, [authUser, subscribeToUser]);
 
     const loading = authUserLoading || dataLoading;
 

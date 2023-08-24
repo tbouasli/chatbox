@@ -1,0 +1,49 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    match /{document=**} {
+      allow read, write: if true;
+    }
+
+    match /users/{userId} {
+      allow read: if isSignedIn();
+    }
+
+    match /friendships/{friendshipId} {
+      allow read: if request.auth.uid in resource.data.users;
+    }
+
+    match /chats/{chatId} {
+      allow read: if request.auth.uid in resource.data.members;
+
+      match /messages/{messageId} {
+        allow read, write: if request.auth.uid in getChatData(chatId).members;
+      }
+    }
+
+    // Functions
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // function isOwner(userId) {
+    //   return request.auth.uid == userId;
+    // }
+
+    // function existingData() {
+    //   return resource.data
+    // }
+
+    // function incomingData() {
+    //   return request.resource.data
+    // }
+
+    function getChatData(chatId) {
+      return get(/databases/$(database)/documents/chats/$(chatId)).data
+    }
+    
+  }
+}

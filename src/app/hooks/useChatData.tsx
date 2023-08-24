@@ -1,145 +1,107 @@
-import { doc, getDoc, getDocFromCache, getDocFromServer, onSnapshot } from 'firebase/firestore';
+import { Timestamp, collection, doc, getDoc, getDocs, limit, onSnapshot, orderBy, query, where } from 'firebase/firestore';
 import React from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
 
 import { auth, firestore } from '@/lib/firebase';
 
-import useLoadingBuffer from '@/shared/hooks/useLoadingBuffer';
-
-import { chatMapper } from '@/app/infra/mappers/ChatMapper';
-import { messageMapper } from '@/app/infra/mappers/MessageMapper';
-import { userMapper } from '@/app/infra/mappers/UserMapper';
+import { chatConverter } from '@/app/infra/converter/ChatConverter';
+import { messageConverter } from '@/app/infra/converter/MessageConverter';
+import { Chat } from '@/app/infra/models/Chat';
 import { Message } from '@/app/infra/models/Message';
 
-export interface ChatDTO {
+export interface ChatData {
     id: string;
     displayName: string;
-    nickname: string;
     photoURL: string;
-    messages?: Message[];
+    lastMessage: string;
+    lastMessageTimestamp: Timestamp;
+    unreadMessages: number;
+}
+export interface ChatsData {
+    data?: ChatData[] | null;
+    loading: boolean;
 }
 
-export default function useChatData(id: string) {
-    const [data, setData] = React.useState<ChatDTO>();
+export default function useChatData(): ChatsData {
+    const [dataLoading, setDataLoading] = React.useState<boolean>(true);
+    const [data, setData] = React.useState<ChatData[] | null>(null);
     const [authUser, authUserLoading] = useAuthState(auth);
-    const { buffer: dataLoading, setLoading: setDataLoading } = useLoadingBuffer();
 
-    const getChatData = React.useCallback(
-        async (from: 'cache' | 'server') => {
-            const chatRef = doc(firestore, 'chats', id);
-            const chatDoc =
-                from === 'cache'
-                    ? await getDocFromCache(chatRef.withConverter(chatMapper))
-                    : await getDocFromServer(chatRef.withConverter(chatMapper));
+    const subscribeToUserChats = React.useCallback(() => {
+        if (!authUser?.uid) return;
 
-            if (!chatDoc.exists()) {
-                throw new Error('Chat not found');
-            }
+        setDataLoading(true);
 
-            const chat = chatDoc.data();
+        const chatsRef = collection(firestore, 'chats').withConverter(chatConverter);
 
-            const memberRef = chat.members?.find((member) => member.id !== authUser?.uid);
+        const chatsQuery = query(chatsRef, where('members', 'array-contains', authUser?.uid));
 
-            if (!memberRef) {
-                throw new Error('Member not found');
-            }
+        return onSnapshot(
+            chatsQuery,
+            async (snapshot) => {
+                const chats = snapshot.docs.filter((doc) => doc.exists()).map((doc) => doc.data());
 
-            const memberDoc =
-                from === 'cache'
-                    ? await getDocFromCache(memberRef.withConverter(userMapper))
-                    : await getDocFromServer(memberRef.withConverter(userMapper));
+                const data = chats.map(async (chat: Chat) => {
+                    const friendId = chat.members.find((member) => member !== authUser?.uid);
 
-            if (!memberDoc.exists()) {
-                throw new Error('Member not found');
-            }
+                    if (!friendId) return;
 
-            const memberData = memberDoc.data();
+                    const friendRef = doc(firestore, 'users', friendId);
 
-            const messageRef = chat.messages;
+                    const friendDoc = await getDoc(friendRef);
 
-            const messageData = await Promise.all(
-                messageRef?.map(async (message) => {
-                    const messageDoc =
-                        from === 'cache'
-                            ? await getDocFromCache(message.withConverter(messageMapper))
-                            : await getDocFromServer(message.withConverter(messageMapper));
+                    const friend = friendDoc.data();
 
-                    if (!messageDoc.exists()) {
-                        return;
-                    }
+                    const messageCollection = collection(firestore, 'chats', chat.id, 'messages').withConverter(messageConverter);
 
-                    return messageDoc.data();
-                }) ?? [],
-            );
+                    const messageQuery = query(messageCollection, orderBy('createdAt', 'desc'), limit(1));
 
-            const filteredMessageData = messageData.filter((message) => message !== undefined) as Message[];
+                    const messageSnapshot = await getDocs(messageQuery);
 
-            setData({
-                id: chat.id,
-                displayName: memberData.displayName,
-                nickname: memberData.nickname,
-                photoURL: memberData.photoURL,
-                messages: filteredMessageData,
-            });
-        },
-        [id, authUser?.uid],
-    );
+                    const lastMessage = messageSnapshot.docs[0]?.data() as Message;
 
-    const getData = React.useCallback(async () => {
-        try {
-            setDataLoading(true);
-            await getChatData('cache');
-        } catch {
-            await getChatData('server');
-        } finally {
-            setDataLoading(false);
-        }
-    }, [getChatData]);
+                    const unreadQuery = query(messageCollection, where('read', '==', false), where('sender', '!=', authUser?.uid));
 
-    React.useEffect(() => {
-        getData();
-    }, [getData]);
+                    const unreadSnapshot = await getDocs(unreadQuery);
 
-    React.useEffect(() => {
-        const unsubscribe = onSnapshot(doc(firestore, 'chats', id).withConverter(chatMapper), async (chatDoc) => {
-            if (!chatDoc.exists()) {
-                throw new Error('Chat not found');
-            }
+                    const unreadMessages = unreadSnapshot.docs.length;
 
-            const chatData = chatDoc.data();
+                    return {
+                        id: chat.id,
+                        displayName: friend?.displayName,
+                        photoURL: friend?.photoURL,
+                        lastMessage: lastMessage?.content,
+                        lastMessageTimestamp: lastMessage?.createdAt,
+                        unreadMessages: unreadMessages,
+                    };
+                });
 
-            const messageRef = chatData.messages;
+                try {
+                    const chatsData = await Promise.all(data);
 
-            const messageData = await Promise.all(
-                messageRef?.map(async (message) => {
-                    const messageDoc = await getDoc(message.withConverter(messageMapper));
+                    const filteredChats = chatsData.filter((chat) => chat !== undefined) as unknown as ChatData[];
 
-                    if (!messageDoc.exists()) {
-                        return;
-                    }
-
-                    return messageDoc.data();
-                }) ?? [],
-            );
-
-            const filteredMessageData = messageData.filter((message) => message !== undefined) as Message[];
-
-            setData((prevData) => {
-                if (!prevData) {
-                    return;
+                    setData(filteredChats);
+                    setDataLoading(false);
+                } catch (e) {
+                    console.log(e);
+                    setDataLoading(false);
                 }
+            },
+            (e) => {
+                console.log(e);
+                setDataLoading(false);
+            },
+        );
+    }, [authUser?.uid]);
 
-                return {
-                    ...prevData,
-                    messages: filteredMessageData,
-                };
-            });
-        });
+    React.useEffect(() => {
+        const unsubscribe = subscribeToUserChats();
 
         return () => {
-            unsubscribe();
+            unsubscribe && unsubscribe();
         };
-    }, [id]);
+    }, [subscribeToUserChats]);
 
     const loading = authUserLoading || dataLoading;
 

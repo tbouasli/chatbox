@@ -1,36 +1,49 @@
-import { Loader2 } from 'lucide-react';
+import React from 'react';
 
 import MessageComponent from '@/shared/components/atom/Message';
 
 import useAppData from '@/app/hooks/useAppData';
-import { Message } from '@/app/infra/models/Message';
+import useMessages from '@/app/hooks/useMessages';
 
 interface ChatMessagesProps {
-    messages?: Message[];
-    loading?: boolean;
+    id?: string;
 }
 
-function ChatMessages({ messages, loading }: ChatMessagesProps) {
+function ChatMessages({ id }: ChatMessagesProps) {
+    const topRef = React.useRef<HTMLDivElement>(null);
     const { user } = useAppData();
+    const { messages, getMoreMessages } = useMessages(id);
 
-    if (loading) {
-        return (
-            <div className="w-full flex items-center justify-center">
-                <Loader2 size={64} className="text-gray-500 animate-spin" />
-            </div>
-        );
-    }
+    React.useEffect(() => {
+        if (!topRef.current) return;
+
+        const observer = new IntersectionObserver((entries) => {
+            if (entries[0].isIntersecting) {
+                getMoreMessages();
+            }
+        });
+
+        observer.observe(topRef.current);
+
+        return () => {
+            observer.disconnect();
+        };
+    }, [messages, getMoreMessages]);
 
     return (
-        <div className="flex flex-col gap-2 p-2 w-full">
+        <div className="flex flex-col-reverse grow gap-2 p-2 w-full overflow-scroll">
             {messages?.map((message) => (
                 <MessageComponent
                     key={message.id}
+                    id={message.id}
+                    chatId={id ?? 'loading'}
                     content={message.content}
                     createdAt={message.createdAt}
-                    fromSelf={message.sender.id == user.data?.id}
+                    fromSelf={message.senderId === user?.data?.id}
+                    read={message.read}
                 />
             ))}
+            <div ref={topRef} />
         </div>
     );
 }

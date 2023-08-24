@@ -5,7 +5,7 @@ import DividerWithInfix from '@/shared/components/molecule/Divider';
 import SignInForm from '@/shared/components/organism/SignInForm';
 import SocialLogin from '@/shared/components/organism/SocialLogin';
 
-function SignIn() {
+function SignInPage() {
     return (
         <main className="h-full w-full flex flex-col justify-center p-6 gap-4">
             <div className="center">
@@ -24,4 +24,4 @@ function SignIn() {
     );
 }
 
-export default SignIn;
+export default SignInPage;

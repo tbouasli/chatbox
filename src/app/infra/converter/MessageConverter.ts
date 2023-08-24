@@ -2,14 +2,15 @@ import { DocumentData, FirestoreDataConverter, QueryDocumentSnapshot, SnapshotOp
 
 import { Message } from '@/app/infra/models/Message';
 
-class MessageMapper implements FirestoreDataConverter<Message> {
+class MessageConverter implements FirestoreDataConverter<Message> {
     fromFirestore(snapshot: QueryDocumentSnapshot<DocumentData, DocumentData>, options?: SnapshotOptions | undefined): Message {
         const data = snapshot.data(options);
-        return new Message({
+        return Message.existing({
             id: snapshot.id,
             content: data.content,
-            chat: data.chat,
-            sender: data.sender,
+            senderId: data.senderId,
+            chatId: data.chatId,
+            read: data.read ?? false,
             createdAt: data.createdAt,
         });
     }
@@ -17,11 +18,12 @@ class MessageMapper implements FirestoreDataConverter<Message> {
     toFirestore(message: Message): DocumentData {
         return {
             content: message.content,
-            chat: message.chat,
-            sender: message.sender,
+            chatId: message.chatId,
+            senderId: message.senderId,
+            read: message.read,
             createdAt: message.createdAt,
         };
     }
 }
 
-export const messageMapper = new MessageMapper();
+export const messageConverter = new MessageConverter();

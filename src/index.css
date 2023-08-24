@@ -92,6 +92,12 @@
     }
 }
 
+@layer components {
+    .page {
+        @apply h-[100dvh] w-full flex flex-col overflow-hidden;
+    }
+}
+
 @layer utilities {
     .center {
         @apply flex justify-center items-center text-center;

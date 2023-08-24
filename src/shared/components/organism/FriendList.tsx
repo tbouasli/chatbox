@@ -1,24 +1,28 @@
 import UserItem from '@/shared/components/molecule/UserItem';
 
-import useCreateChat from '@/app/hooks/useCreateChat';
-import useFriendsData from '@/app/hooks/useFriendsData';
+import useAppData from '@/app/hooks/useAppData';
+import useChat from '@/app/hooks/useChat';
 
 function FriendList() {
-    const { data, loading } = useFriendsData();
-    const { createChat } = useCreateChat();
+    const { createChat } = useChat();
+
+    const { friendships } = useAppData();
+    const { loading, data } = friendships;
 
     if (loading) {
-        return Array.from({ length: 5 }).map((_, index) => <UserItem key={index} loading />);
+        return Array.from({ length: 3 }).map((_, index) => <UserItem key={index} loading />);
     }
 
-    return data?.map((friend) => (
-        <UserItem
-            key={friend.id}
-            displayName={friend.displayName}
-            nickname={friend.nickname}
-            photoURL={friend.photoURL}
-            onClick={() => createChat(friend)}
-        />
-    ));
+    return data
+        ?.filter((friendship) => friendship.status === 'accepted')
+        .map((friendship) => (
+            <UserItem
+                key={friendship.id}
+                displayName={friendship.displayName}
+                nickname={friendship.nickname}
+                photoURL={friendship.photoURL}
+                onClick={() => createChat({ friendshipId: friendship.id })}
+            />
+        ));
 }
 export default FriendList;

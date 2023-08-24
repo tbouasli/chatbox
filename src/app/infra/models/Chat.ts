@@ -1,24 +1,20 @@
-import { DocumentReference } from 'firebase/firestore';
 import { v4 as UUID } from 'uuid';
 
 interface ChatProps {
     id?: string;
-    members?: DocumentReference[];
-    messages?: DocumentReference[];
+    members: string[];
 }
 
 export class Chat implements ChatProps {
     id: string;
-    members?: DocumentReference[];
-    messages?: DocumentReference[];
+    members: string[];
 
-    constructor(props: ChatProps) {
+    private constructor(props: ChatProps) {
         this.id = props.id ?? UUID();
-        this.members = props.members || [];
-        this.messages = props.messages || [];
+        this.members = props.members;
     }
 
-    addMessage(message: DocumentReference) {
-        this.messages?.push(message);
+    static existing(props: ChatProps): Chat {
+        return new Chat(props);
     }
 }

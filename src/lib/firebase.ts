@@ -1,25 +1,32 @@
 import { getAnalytics, isSupported } from 'firebase/analytics';
 import { initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
-import { initializeFirestore, persistentLocalCache } from 'firebase/firestore';
-import { getStorage } from 'firebase/storage';
+import { connectAuthEmulator, getAuth } from 'firebase/auth';
+import { connectFirestoreEmulator, getFirestore } from 'firebase/firestore';
+import { connectFunctionsEmulator, getFunctions } from 'firebase/functions';
+import { getMessaging } from 'firebase/messaging';
+import { connectStorageEmulator, getStorage } from 'firebase/storage';
 
 const firebaseConfig = {
-    apiKey: 'AIzaSyDibFALHCXaw_WE0hOmLSZlr3DD1zMRXCo',
-    authDomain: 'chatbox-a1493.firebaseapp.com',
-    projectId: 'chatbox-a1493',
-    storageBucket: 'chatbox-a1493.appspot.com',
-    messagingSenderId: '569522095892',
-    appId: '1:569522095892:web:020d59e438156a0f52a401',
-    measurementId: 'G-1XZ5579XRJ',
+    apiKey: 'AIzaSyBgNapY6sa09zMHS_AQy5HNbT2v1r4xQbE',
+    authDomain: 'chatbox-dev-f610d.firebaseapp.com',
+    projectId: 'chatbox-dev-f610d',
+    storageBucket: 'chatbox-dev-f610d.appspot.com',
+    messagingSenderId: '296798768254',
+    appId: '1:296798768254:web:3ddbc581ff11f06a9e1c2f',
 };
 
 export const app = initializeApp(firebaseConfig);
 export const analytics = isSupported().then((yes) => (yes ? getAnalytics(app) : null));
 export const auth = getAuth(app);
-export const firestore = initializeFirestore(app, {
-    localCache: persistentLocalCache({
-        cacheSizeBytes: 1_000_000_000, // 1GB
-    }),
-});
+export const firestore = getFirestore(app);
 export const storage = getStorage(app);
+export const messaging = getMessaging(app);
+export const functions = getFunctions(app, 'southamerica-east1');
+
+if (import.meta.env.VITE_FIREBASE_USE_EMULATOR === 'true') {
+    console.log('Using Firebase Emulator');
+    connectFirestoreEmulator(firestore, 'localhost', 8080);
+    connectAuthEmulator(auth, 'http://localhost:9099');
+    connectStorageEmulator(storage, 'localhost', 9199);
+    connectFunctionsEmulator(functions, 'localhost', 5001);
+}

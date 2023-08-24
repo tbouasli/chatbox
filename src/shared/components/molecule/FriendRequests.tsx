@@ -7,14 +7,16 @@ import useAppData from '@/app/hooks/useAppData';
 import ListItem from './ListItem';
 
 function FriendRequests() {
-    const { user } = useAppData();
+    const { friendships } = useAppData();
     const navigate = useNavigate();
 
-    if (!user.data?.friendRequestsReceived?.length) return null;
+    if (!friendships.data?.filter((friend) => friend.status === 'pending' && friend.type === 'received').length) {
+        return null;
+    }
 
     return (
         <ListItem className="py-4 border-y border-primary/40" onClick={() => navigate('/app/friends/requests')}>
-            <NotificationBadge count={user.data?.friendRequestsReceived?.length} />
+            <NotificationBadge count={friendships.data?.filter((friend) => friend.status === 'pending').length} />
             <span>Friend Requests</span>
         </ListItem>
     );
