@@ -7,6 +7,7 @@ import FriendRequestsPage from './app/pages/friends/requests';
 import SearchUserPage from './app/pages/friends/search';
 import HomePage from './app/pages/home';
 import OnBoardingPage from './app/pages/on-boarding';
+import SettingsPage from './app/pages/settings';
 import WorkInProgressPage from './app/pages/wip';
 import { AppDataProvider } from './app/provider/AppData';
 import SignInPage from './auth/pages/sign-in';
@@ -36,6 +37,7 @@ const router = createBrowserRouter(
                     <Route path="requests" element={<FriendRequestsPage />} />
                 </Route>
                 <Route path="settings">
+                    <Route path="" element={<SettingsPage />} />
                     <Route path="profile" element={<WorkInProgressPage />} />
                     <Route path="notifications" element={<WorkInProgressPage />} />
                 </Route>
