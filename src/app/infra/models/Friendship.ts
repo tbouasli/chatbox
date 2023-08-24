@@ -4,6 +4,7 @@ interface FriendshipProps {
     id: string;
     users: string[];
     status: FriendshipStatus;
+    senderId: string;
     createdAt?: Date;
 }
 
@@ -11,12 +12,14 @@ export class Friendship implements FriendshipProps {
     id: string;
     users: string[];
     status: FriendshipStatus;
+    senderId: string;
     createdAt?: Date;
 
     private constructor(props: FriendshipProps) {
         this.id = props.id;
         this.users = props.users;
         this.status = props.status;
+        this.senderId = props.senderId;
         this.createdAt = props.createdAt;
     }
 

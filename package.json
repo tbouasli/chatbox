@@ -4,8 +4,8 @@
     "version": "0.1.0",
     "type": "module",
     "scripts": {
-        "dev": "VITE_FIREBASE_USE_EMULATOR=true vite",
-        "dev:fullstack": "concurrently \"yarn dev\" \"yarn --cwd ./functions build:watch\" \"firebase emulators:start --import=./emulators --export-on-exit\"",
+        "dev": "vite",
+        "dev:fullstack": "concurrently \"VITE_FIREBASE_USE_EMULATOR=true  yarn dev\" \"yarn --cwd ./functions build:watch\" \"firebase emulators:start --import=./emulators --export-on-exit\"",
         "build": "tsc && vite build",
         "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
         "preview": "vite preview"

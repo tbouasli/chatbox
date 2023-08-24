@@ -5,7 +5,7 @@ import { Message } from '@/app/infra/models/Message';
 class MessageConverter implements FirestoreDataConverter<Message> {
     fromFirestore(snapshot: QueryDocumentSnapshot<DocumentData, DocumentData>, options?: SnapshotOptions | undefined): Message {
         const data = snapshot.data(options);
-        return new Message({
+        return Message.existing({
             id: snapshot.id,
             content: data.content,
             senderId: data.senderId,

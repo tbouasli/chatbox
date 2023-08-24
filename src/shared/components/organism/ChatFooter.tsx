@@ -10,23 +10,31 @@ interface ChatFooterProps {
 }
 
 function ChatFooter({ id }: ChatFooterProps) {
-    const [content, setContent] = React.useState('');
     const { sendMessage } = useChat();
 
-    const handleSubmit = React.useCallback(async () => {
-        if (!id) return;
+    const handleSubmit = React.useCallback(
+        async (e: React.FormEvent<HTMLFormElement>) => {
+            if (!id) return;
 
-        sendMessage({
-            chatId: id,
-            content,
-        });
-    }, [id, content, sendMessage]);
+            e.preventDefault();
+
+            const content = e.currentTarget.content.value;
+
+            sendMessage({
+                chatId: id,
+                content,
+            });
+
+            e.currentTarget.reset();
+        },
+        [id, sendMessage],
+    );
 
     return (
-        <div className="flex gap-4 w-full p-3">
-            <Input placeholder="Type a message" value={content} onChange={(e) => setContent(e.target.value)} />
-            <Button onClick={handleSubmit}>Send</Button>
-        </div>
+        <form onSubmit={handleSubmit} className="flex gap-4 w-full p-3">
+            <Input name="content" placeholder="Type a message" />
+            <Button>Send</Button>
+        </form>
     );
 }
 export default ChatFooter;

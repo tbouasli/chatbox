@@ -10,7 +10,7 @@ function FriendRequests() {
     const { friendships } = useAppData();
     const navigate = useNavigate();
 
-    if (!friendships.data?.filter((friend) => friend.status === 'pending').length) {
+    if (!friendships.data?.filter((friend) => friend.status === 'pending' && friend.type === 'received').length) {
         return null;
     }
 

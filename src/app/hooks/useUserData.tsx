@@ -1,9 +1,8 @@
-import { doc, getDoc, onSnapshot, updateDoc } from 'firebase/firestore';
-import { getToken } from 'firebase/messaging';
+import { doc, getDoc, onSnapshot } from 'firebase/firestore';
 import React from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
 
-import { auth, firestore, messaging } from '@/lib/firebase';
+import { auth, firestore } from '@/lib/firebase';
 
 import { userConverter } from '@/app/infra/converter/UserConverter';
 
@@ -18,16 +17,6 @@ export default function useUserData() {
     const [dataLoading, setDataLoading] = React.useState<boolean>(true);
     const [data, setData] = React.useState<User>();
     const [authUser, authUserLoading] = useAuthState(auth);
-
-    async function getFCMToken() {
-        try {
-            return await getToken(messaging, {
-                vapidKey: 'BJvafJPTL1fBaCyiIbi8W2n8FIh5Tr28iZaiEBZGCutGwB2JExrLg8dmVRY-N5hqmROvI2jKC7BDk2LCEr1a668',
-            });
-        } catch (e) {
-            return 'no-token';
-        }
-    }
 
     const initiallyLoadUser = React.useCallback(async () => {
         setDataLoading(true);
@@ -55,12 +44,6 @@ export default function useUserData() {
             async (userDoc) => {
                 if (userDoc.exists()) {
                     setData(userDoc.data());
-
-                    const token = await getFCMToken(); //TODO: move to a better place and allow for multiple device tokens
-
-                    await updateDoc(docRef, {
-                        fcmToken: token,
-                    });
                 }
                 setDataLoading(false);
             },

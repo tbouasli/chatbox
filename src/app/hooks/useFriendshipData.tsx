@@ -17,6 +17,7 @@ export interface FriendshipData {
     nickname: string;
     photoURL: string;
     status: FriendshipStatus;
+    type: 'sent' | 'received';
 }
 
 export interface FriendshipsData {
@@ -67,6 +68,7 @@ export default function useFriendshipData(): FriendshipsData {
                             nickname: data.nickname,
                             photoURL: data.photoURL,
                             status: friendship.status,
+                            type: friendship.users[0] === authUser?.uid ? 'sent' : 'received',
                         };
 
                         return friendshipData;

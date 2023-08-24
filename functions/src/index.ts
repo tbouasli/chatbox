@@ -1,11 +1,13 @@
 import * as admin from 'firebase-admin';
 import { Timestamp } from 'firebase-admin/firestore';
 import { onCall } from 'firebase-functions/v2/https';
+import { setGlobalOptions } from 'firebase-functions/v2/options';
 
 admin.initializeApp();
 
 const firestore = admin.firestore();
-const fcm = admin.messaging();
+
+setGlobalOptions({ maxInstances: 10, region: 'southamerica-east1' });
 
 interface requestFriendshipRequest {
     friendUid: string;
@@ -27,29 +29,9 @@ export const requestFriendship = onCall<requestFriendshipRequest>(async (request
         };
     }
 
-    const youDoc = await firestore.doc(`users/${uid}`).get();
-    const friendDoc = await firestore.doc(`users/${friendUid}`).get();
-
-    if (!youDoc.exists || !friendDoc.exists) {
-        return {
-            message: `Server Error`,
-        };
-    }
-
-    const you = youDoc.data();
-    const friend = friendDoc.data();
-
     const id = [uid, friendUid].sort().join('_');
 
     const friendshipDoc = await firestore.doc(`friendships/${id}`).get();
-
-    const notification: admin.messaging.Message = {
-        notification: {
-            title: 'Friendship Request',
-            body: `${you?.displayName} sent you a friendship request`,
-        },
-        token: friend?.fcmToken,
-    };
 
     if (friendshipDoc.exists) {
         const friendship = friendshipDoc.data();
@@ -72,8 +54,6 @@ export const requestFriendship = onCall<requestFriendshipRequest>(async (request
                 createdAt: Timestamp.now(),
             });
 
-            await fcm.send(notification);
-
             return {
                 message: `Friendship request sent to ${friendUid}`,
             };
@@ -83,12 +63,11 @@ export const requestFriendship = onCall<requestFriendshipRequest>(async (request
     const friendship = {
         users: [uid, friendUid],
         status: 'pending',
+        senderId: uid,
         createdAt: Timestamp.now(),
     };
 
     await firestore.doc(`friendships/${id}`).set(friendship);
-
-    await fcm.send(notification);
 
     return {
         message: `Friendship request sent to ${friendUid}`,
@@ -125,6 +104,12 @@ export const acceptFriendship = onCall<acceptFriendshipRequest>(async (request) 
 
     const friendship = friendshipDoc.data();
 
+    if (friendship?.senderId === uid) {
+        return {
+            message: `You cannot accept your own friendship request`,
+        };
+    }
+
     if (friendship?.status === 'accepted') {
         return {
             message: `Friendship already accepted`,
@@ -157,30 +142,6 @@ export const acceptFriendship = onCall<acceptFriendshipRequest>(async (request) 
         return {
             message: 'Invalid friendship, friend not found',
         };
-    }
-
-    const friendDoc = await firestore.doc(`users/${friendId}`).get();
-
-    if (!friendDoc.exists) {
-        await firestore.doc(`friendships/${friendshipId}`).delete();
-
-        return {
-            message: 'Invalid friendship, friend not found',
-        };
-    }
-
-    const friend = friendDoc.data();
-
-    if (!friend?.fcmToken && friend?.fcmToken !== 'no-token') {
-        const notification: admin.messaging.Message = {
-            notification: {
-                title: 'Friendship Accepted',
-                body: `${friend?.displayName} accepted your friendship request`,
-            },
-            token: friend?.fcmToken,
-        };
-
-        await fcm.send(notification);
     }
 
     await friendshipDoc.ref.update({
@@ -222,6 +183,12 @@ export const rejectFriendship = onCall<rejectFriendshipRequest>(async (request) 
     }
 
     const friendship = friendshipDoc.data();
+
+    if (friendship?.senderId === uid) {
+        return {
+            message: `You cannot reject your own friendship request`,
+        };
+    }
 
     if (friendship?.status === 'accepted') {
         return {
@@ -339,103 +306,88 @@ export const createChat = onCall<createChatRequest>(async (request) => {
     };
 });
 
-interface SendMessageRequest {
-    chatId: string;
-    content: string;
+interface OnBoardUserRequest {
+    displayName: string;
+    nickname: string;
+    photoURL: string;
+    fcmToken?: string;
+    deviceId: string;
 }
 
-export const sendMessage = onCall<SendMessageRequest>(async (request) => {
-    const uid = request.auth?.uid;
-    const chatId = request.data?.chatId;
-    const content = request.data?.content;
+export const onBoardUser = onCall<OnBoardUserRequest>(async (request) => {
+    try {
+        const uid = request.auth?.uid;
 
-    if (!uid) {
+        if (!uid) {
+            return {
+                message: `You must be authenticated to onboard a user`,
+            };
+        }
+
+        const displayName = request.data?.displayName;
+        const nickname = request.data?.nickname;
+        const photoURL = request.data?.photoURL;
+        const fcmToken = request.data?.fcmToken;
+        const deviceId = request.data?.deviceId;
+
+        if (!displayName) {
+            return {
+                message: `You must provide a displayName`,
+            };
+        }
+
+        if (!nickname) {
+            return {
+                message: `You must provide a nickname`,
+            };
+        }
+
+        if (!photoURL) {
+            return {
+                message: `You must provide a photoURL`,
+            };
+        }
+
+        if (!deviceId) {
+            return {
+                message: `You must provide a deviceId`,
+            };
+        }
+
+        const userDoc = await firestore.doc(`users/${uid}`).get();
+
+        if (userDoc.exists) {
+            return {
+                message: `User already boarded`,
+            };
+        }
+
+        const user = {
+            displayName,
+            nickname,
+            photoURL,
+        };
+
+        await firestore.doc(`users/${uid}`).set(user);
+
+        if (fcmToken) {
+            const token = {
+                token: fcmToken,
+                deviceId,
+                createdAt: Timestamp.now(),
+                lastUsedAt: Timestamp.now(),
+            };
+
+            await firestore.doc(`users/${uid}/fcm_tokens/${fcmToken}`).set(token);
+        }
+
         return {
-            message: `You must be authenticated to send a message`,
+            message: `User boarded`,
         };
-    }
-
-    if (!chatId) {
+    } catch (error) {
+        console.log(error);
         return {
-            message: `You must provide a chatId`,
+            message: `Error onboarding user`,
         };
     }
-
-    if (!content) {
-        return {
-            message: `You must provide a content`,
-        };
-    }
-
-    if (content.length > 255) {
-        return {
-            message: `Content must be less than 255 characters`,
-        };
-    }
-
-    if (content.trim().length === 0) {
-        return {
-            message: `Content must not be empty`,
-        };
-    }
-
-    const chatDoc = await firestore.doc(`chats/${chatId}`).get();
-
-    if (!chatDoc.exists) {
-        return {
-            message: `Chat does not exist`,
-        };
-    }
-
-    const chat = chatDoc.data();
-
-    if (!chat?.members.includes(uid)) {
-        return {
-            message: `You are not part of this chat`,
-        };
-    }
-
-    const otherMemberId = chat.members.find((id: string) => id !== uid);
-
-    if (!otherMemberId) {
-        return {
-            message: `Invalid chat, other member not found`,
-        };
-    }
-
-    const otherMemberDoc = await firestore.doc(`users/${otherMemberId}`).get();
-
-    if (!otherMemberDoc.exists) {
-        return {
-            message: `Invalid chat, other member not found`,
-        };
-    }
-
-    const otherMember = otherMemberDoc.data();
-
-    const message = {
-        content,
-        chatId,
-        senderId: uid,
-        read: false,
-        createdAt: Timestamp.now(),
-    };
-
-    await firestore.collection(`messages`).add(message);
-
-    if (otherMember?.fcmToken && otherMember?.fcmToken !== 'no-token') {
-        const notification: admin.messaging.Message = {
-            notification: {
-                title: 'New Message',
-                body: `${otherMember?.displayName} sent you a message`,
-            },
-            token: otherMember?.fcmToken,
-        };
-
-        await fcm.send(notification);
-    }
-
-    return {
-        message: `Message sent`,
-    };
 });

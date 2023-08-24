@@ -1,14 +1,14 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { doc, getDoc, writeBatch } from 'firebase/firestore';
 import { getToken } from 'firebase/messaging';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import React from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
+import { v4 as UUID } from 'uuid';
 import * as z from 'zod';
 
-import { auth, firestore, messaging, storage } from '@/lib/firebase';
+import { auth, messaging, storage } from '@/lib/firebase';
 
 import ImagePicker from '@/shared/components/molecule/ImagePicker';
 import { Button } from '@/shared/components/ui/button';
@@ -16,8 +16,7 @@ import { Form, FormControl, FormField, FormItem, FormMessage } from '@/shared/co
 import { Input } from '@/shared/components/ui/input';
 import { useToast } from '@/shared/components/ui/use-toast';
 
-import { userConverter } from '@/app/infra/converter/UserConverter';
-import { User } from '@/app/infra/models/User';
+import useUser from '@/app/hooks/useUser';
 
 const FormSchema = z.object({
     displayName: z.string().min(3, {
@@ -34,6 +33,7 @@ const FormSchema = z.object({
 });
 
 function OnBoardingForm() {
+    const { onBoardUser } = useUser();
     const navigate = useNavigate();
     const { toast } = useToast();
     const [user] = useAuthState(auth);
@@ -53,79 +53,59 @@ function OnBoardingForm() {
         }
     }, [user, form]);
 
-    async function getFCMToken() {
-        try {
-            return await getToken(messaging, {
-                vapidKey: 'BJvafJPTL1fBaCyiIbi8W2n8FIh5Tr28iZaiEBZGCutGwB2JExrLg8dmVRY-N5hqmROvI2jKC7BDk2LCEr1a668',
-            });
-        } catch (e) {
-            return 'no-token';
-        }
-    }
+    const onSubmit = React.useCallback(
+        async (values: z.infer<typeof FormSchema>) => {
+            try {
+                if (!user) {
+                    toast({
+                        title: 'Error',
+                        description: 'Please login first.',
+                    });
+                    return;
+                }
 
-    async function onSubmit(values: z.infer<typeof FormSchema>) {
-        try {
-            if (!user) {
-                toast({
-                    title: 'Error',
-                    description: 'Please login first.',
+                if (!image && !user?.photoURL) {
+                    toast({
+                        title: 'Error',
+                        description: 'Please upload a profile picture.',
+                    });
+                    return;
+                }
+                const storageRef = ref(storage, `users/profile-picture/${user.uid}`);
+
+                if (image) {
+                    await uploadBytes(storageRef, image);
+                }
+
+                const downloadURL = image ? await getDownloadURL(storageRef) : (user.photoURL as string);
+
+                let fcmToken;
+
+                try {
+                    const token = await getToken(messaging, {
+                        vapidKey: 'BJvafJPTL1fBaCyiIbi8W2n8FIh5Tr28iZaiEBZGCutGwB2JExrLg8dmVRY-N5hqmROvI2jKC7BDk2LCEr1a668',
+                    });
+
+                    fcmToken = token;
+                } catch (e) {
+                    console.log(e);
+                }
+
+                await onBoardUser({
+                    displayName: values.displayName,
+                    nickname: values.nickname,
+                    photoURL: downloadURL,
+                    fcmToken,
+                    deviceId: UUID(),
                 });
-                return;
+
+                navigate('/app');
+            } catch (e) {
+                console.log(e);
             }
-
-            if (!image && !user?.photoURL) {
-                toast({
-                    title: 'Error',
-                    description: 'Please upload a profile picture.',
-                });
-                return;
-            }
-            const storageRef = ref(storage, `users/profile-picture/${user.uid}`);
-
-            if (image) {
-                await uploadBytes(storageRef, image);
-            }
-
-            const downloadURL = image ? await getDownloadURL(storageRef) : (user.photoURL as string);
-
-            const token = await getFCMToken();
-
-            const userEntity = new User({
-                id: user.uid,
-                displayName: values.displayName,
-                nickname: values.nickname,
-                photoURL: downloadURL,
-                fcmToken: token,
-            });
-
-            const userDocRef = doc(firestore, 'users', user.uid);
-            const indexDocRef = doc(firestore, 'index', 'user', 'nickname', userEntity.nickname);
-
-            const indexDoc = await getDoc(indexDocRef);
-
-            if (indexDoc.exists()) {
-                toast({
-                    title: 'Error',
-                    description: 'Nickname already taken.',
-                });
-                return;
-            }
-
-            const batch = writeBatch(firestore);
-
-            batch.set(userDocRef.withConverter(userConverter), userEntity);
-
-            batch.set(indexDocRef, {
-                ref: userDocRef,
-            });
-
-            await batch.commit();
-
-            navigate('/app');
-        } catch (e) {
-            console.log(e);
-        }
-    }
+        },
+        [image, navigate, onBoardUser, toast, user],
+    );
 
     return (
         <Form {...form}>

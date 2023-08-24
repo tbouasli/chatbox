@@ -1,4 +1,15 @@
-import { DocumentData, DocumentReference, collection, getDocs, limit, orderBy, query, startAfter, where } from 'firebase/firestore';
+import {
+    DocumentData,
+    DocumentReference,
+    collection,
+    getDocs,
+    limit,
+    onSnapshot,
+    orderBy,
+    query,
+    startAfter,
+    where,
+} from 'firebase/firestore';
 import React from 'react';
 
 import { firestore } from '@/lib/firebase';
@@ -14,31 +25,34 @@ export default function useMessages(chatId?: string) {
     const [messages, setMessages] = React.useState<Message[]>([]);
     const [loading, setLoading] = React.useState(false);
 
-    const getInitialMessages = React.useCallback(async () => {
-        if (!chatId) return;
+    const subscribeToMessages = React.useCallback(() => {
+        try {
+            if (!chatId) return;
 
-        setLoading(true);
+            setLoading(true);
 
-        const messagesQuery = query(
-            collection(firestore, 'messages').withConverter(messageConverter),
-            where('chatId', '==', chatId),
-            orderBy('createdAt', 'desc'),
-            limit(PAGE_SIZE),
-        );
+            const messagesQuery = query(
+                collection(firestore, 'chats', chatId, 'messages').withConverter(messageConverter),
+                orderBy('createdAt', 'desc'),
+                limit(PAGE_SIZE),
+            );
 
-        const messagesSnapshot = await getDocs(messagesQuery);
+            const subscription = onSnapshot(messagesQuery, (snapshot) => {
+                const messagesData = snapshot.docs.map((doc) => doc.data());
 
-        const messagesData = messagesSnapshot.docs.map((doc) => doc.data());
+                setMessages(messagesData.sort(sort));
 
-        setMessages(messagesData);
+                if (messagesData.length > 0) {
+                    setLastMessageDocRef(snapshot.docs[snapshot.docs.length - 1]);
+                }
+            });
 
-        console.log('ran getInitialMessages');
+            return () => subscription();
 
-        if (messagesData.length > 0) {
-            setLastMessageDocRef(messagesSnapshot.docs[messagesSnapshot.docs.length - 1]);
+            setLoading(false);
+        } catch (e) {
+            console.log(e);
         }
-
-        setLoading(false);
     }, [chatId]);
 
     const getMoreMessages = React.useCallback(async () => {
@@ -47,7 +61,7 @@ export default function useMessages(chatId?: string) {
         setLoading(true);
 
         const messagesQuery = query(
-            collection(firestore, 'messages').withConverter(messageConverter),
+            collection(firestore, 'chats', chatId, 'messages').withConverter(messageConverter),
             where('chatId', '==', chatId),
             orderBy('createdAt', 'desc'),
             startAfter(lastMessageDocRef),
@@ -65,13 +79,13 @@ export default function useMessages(chatId?: string) {
         }
 
         setLoading(false);
-
-        console.log('ran getMoreMessages');
     }, [chatId, lastMessageDocRef]);
 
     React.useEffect(() => {
-        getInitialMessages();
-    }, [getInitialMessages]);
+        const unsubscribe = subscribeToMessages();
+
+        return () => unsubscribe && unsubscribe();
+    }, [subscribeToMessages]);
 
     return { messages, loading, getMoreMessages };
 }
