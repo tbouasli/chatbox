@@ -16,7 +16,7 @@ import { Form, FormControl, FormField, FormItem, FormMessage } from '@/shared/co
 import { Input } from '@/shared/components/ui/input';
 import { useToast } from '@/shared/components/ui/use-toast';
 
-import { userMapper } from '@/app/infra/mappers/UserMapper';
+import { userConverter } from '@/app/infra/converter/UserConverter';
 import { User } from '@/app/infra/models/User';
 
 const FormSchema = z.object({
@@ -113,7 +113,7 @@ function OnBoardingForm() {
 
             const batch = writeBatch(firestore);
 
-            batch.set(userDocRef.withConverter(userMapper), userEntity);
+            batch.set(userDocRef.withConverter(userConverter), userEntity);
 
             batch.set(indexDocRef, {
                 ref: userDocRef,

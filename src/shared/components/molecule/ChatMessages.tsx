@@ -1,20 +1,38 @@
+import React from 'react';
+
 import MessageComponent from '@/shared/components/atom/Message';
 
 import useAppData from '@/app/hooks/useAppData';
-import useChatMessages from '@/app/hooks/useMessageData';
+import useMessages from '@/app/hooks/useMessages';
 
 interface ChatMessagesProps {
     id?: string;
 }
 
 function ChatMessages({ id }: ChatMessagesProps) {
+    const topRef = React.useRef<HTMLDivElement>(null);
     const { user } = useAppData();
+    const { messages, getMoreMessages } = useMessages(id);
 
-    const { data } = useChatMessages(id ?? 'loading'); //TODO add error handling
+    React.useEffect(() => {
+        if (!topRef.current) return;
+
+        const observer = new IntersectionObserver((entries) => {
+            if (entries[0].isIntersecting) {
+                getMoreMessages();
+            }
+        });
+
+        observer.observe(topRef.current);
+
+        return () => {
+            observer.disconnect();
+        };
+    }, [messages, getMoreMessages]);
 
     return (
-        <div className="flex flex-col gap-2 p-2 w-full">
-            {data?.map((message) => (
+        <div className="flex flex-col-reverse grow gap-2 p-2 w-full overflow-scroll">
+            {messages?.map((message) => (
                 <MessageComponent
                     key={message.id}
                     id={message.id}
@@ -25,6 +43,7 @@ function ChatMessages({ id }: ChatMessagesProps) {
                     read={message.read}
                 />
             ))}
+            <div ref={topRef} />
         </div>
     );
 }

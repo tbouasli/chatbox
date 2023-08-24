@@ -38,7 +38,7 @@ function ImagePicker({ setImage, defaultImage }: ImagePickerProps) {
                 alt="Profile"
                 height={96}
                 width={96}
-                className="rounded-full cursor-pointer"
+                className="rounded-full aspect-square cursor-pointer object-cover"
             />
             <Input className="hidden" ref={inputRef} type="file" onChange={onChange} />
         </div>

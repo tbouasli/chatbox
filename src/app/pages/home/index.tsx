@@ -4,7 +4,7 @@ import ChatList from '@/shared/components/organism/ChatList';
 import ChatsHeader from '@/shared/components/organism/ChatsHeader';
 import { Button } from '@/shared/components/ui/button';
 
-function Home() {
+function HomePage() {
     return (
         <main className="h-full w-full flex flex-col">
             <ChatsHeader />
@@ -18,4 +18,4 @@ function Home() {
     );
 }
 
-export default Home;
+export default HomePage;

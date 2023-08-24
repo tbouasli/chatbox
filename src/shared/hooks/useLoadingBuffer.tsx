@@ -21,6 +21,6 @@ export default function useLoadingBuffer() {
 
     return {
         setLoading,
-        buffer,
+        loading: buffer,
     };
 }

@@ -1,7 +1,7 @@
 import OnBoardingForm from '@/shared/components/organism/OnBoardingForm';
 import OnBoardingHeader from '@/shared/components/organism/OnBoardingHeader';
 
-function OnBoarding() {
+function OnBoardingPage() {
     return (
         <main className="h-full w-full flex flex-col">
             <OnBoardingHeader />
@@ -12,4 +12,4 @@ function OnBoarding() {
     );
 }
 
-export default OnBoarding;
+export default OnBoardingPage;

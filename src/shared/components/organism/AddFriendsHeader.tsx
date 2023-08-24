@@ -7,7 +7,7 @@ interface AddFriendsHeaderProps {
     setNickname: (nickname: string) => void;
 }
 
-function AddFriendsHeader({ setNickname }: AddFriendsHeaderProps) {
+function SearchUserHeader({ setNickname }: AddFriendsHeaderProps) {
     return (
         <AppHeaderWithBackButton>
             <div className="flex items-center w-full gap-3">
@@ -18,4 +18,4 @@ function AddFriendsHeader({ setNickname }: AddFriendsHeaderProps) {
     );
 }
 
-export default AddFriendsHeader;
+export default SearchUserHeader;

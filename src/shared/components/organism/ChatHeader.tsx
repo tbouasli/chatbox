@@ -1,5 +1,7 @@
+import React from 'react';
+
 import useAppData from '@/app/hooks/useAppData';
-import useChatData from '@/app/hooks/useChatData';
+import { ChatData } from '@/app/hooks/useChatData';
 
 import AppHeaderWithBackButton from '../molecule/AppHeaderWithBackButton';
 import UserItem from '../molecule/UserItem';
@@ -9,18 +11,20 @@ interface ChatHeaderProps {
 }
 
 function ChatHeader({ id }: ChatHeaderProps) {
-    const { data, loading } = useChatData(id ?? 'loading');
-    const { user } = useAppData();
+    const [chat, setChat] = React.useState<ChatData>();
+    const { chats } = useAppData();
 
-    const visual = data?.getVisual(user?.data?.id ?? 'loading');
+    React.useEffect(() => {
+        const found = chats.data?.find((chat) => chat.id === id);
+
+        if (found) {
+            setChat(found);
+        }
+    }, [chats.data, id]);
 
     return (
         <AppHeaderWithBackButton>
-            <UserItem
-                displayName={visual?.displayName ?? 'Loading...'}
-                photoURL={visual?.photoURL ?? ''}
-                loading={loading || user.loading}
-            />
+            <UserItem displayName={chat?.displayName} photoURL={chat?.photoURL} loading={chats.loading} />
         </AppHeaderWithBackButton>
     );
 }

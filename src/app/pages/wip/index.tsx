@@ -12,7 +12,7 @@ function WorkInProgressPage() {
                 <Construction size={48} />
                 <h1 className="text-3xl font-bold">Work in Progress</h1>
                 <p className="text-lg text-gray-500">This page is still under development. Please come back later.</p>
-                <Button onClick={() => navigate(-1)}>
+                <Button onClick={() => navigate('/app')}>
                     <Undo2 />
                 </Button>
             </div>

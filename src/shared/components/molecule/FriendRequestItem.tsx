@@ -1,29 +1,44 @@
 import { Button } from '@/shared/components/ui/button';
 
-import useAnswerFriendRequest from '@/app/hooks/useAnswerFriendRequest';
-import { FriendRequest as FriendRequestModel } from '@/app/infra/models/FriendRequest';
+import useFriendship from '@/app/hooks/useFriendship';
+import { FriendshipData } from '@/app/hooks/useFriendshipData';
 
 import UserItem from './UserItem';
 
 interface UserFoundProps {
-    friendRequest: FriendRequestModel;
+    friendRequest: FriendshipData;
     loading: boolean;
 }
 
 function FriendRequestItem({ loading, friendRequest }: UserFoundProps) {
-    const { acceptFriendRequest, rejectFriendRequest } = useAnswerFriendRequest(friendRequest);
+    const { acceptFriendship, rejectFriendship } = useFriendship();
 
     return (
         <UserItem
-            displayName={friendRequest?.senderDisplayName}
-            nickname={friendRequest?.senderNickname}
-            photoURL={friendRequest?.senderPhotoURL}
+            displayName={friendRequest?.displayName}
+            nickname={friendRequest?.nickname}
+            photoURL={friendRequest?.photoURL}
             loading={loading}
         >
-            <Button size="sm" variant="destructive" onClick={rejectFriendRequest}>
+            <Button
+                size="sm"
+                variant="destructive"
+                onClick={() =>
+                    rejectFriendship({
+                        friendshipId: friendRequest.id,
+                    })
+                }
+            >
                 Reject
             </Button>
-            <Button size="sm" onClick={acceptFriendRequest}>
+            <Button
+                size="sm"
+                onClick={() =>
+                    acceptFriendship({
+                        friendshipId: friendRequest.id,
+                    })
+                }
+            >
                 Accept
             </Button>
         </UserItem>

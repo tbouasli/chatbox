@@ -5,6 +5,7 @@ interface MessageProps {
     id?: string;
     content: string;
     senderId: string;
+    chatId: string;
     read: boolean;
     createdAt: Timestamp;
 }
@@ -13,6 +14,7 @@ export class Message implements MessageProps {
     id: string;
     content: string;
     senderId: string;
+    chatId: string;
     read: boolean;
     createdAt: Timestamp;
 
@@ -20,6 +22,7 @@ export class Message implements MessageProps {
         this.id = props.id || UUID();
         this.content = props.content;
         this.senderId = props.senderId;
+        this.chatId = props.chatId;
         this.read = props.read;
         this.createdAt = props.createdAt;
     }

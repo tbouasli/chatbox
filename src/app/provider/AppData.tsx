@@ -1,20 +1,14 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 
-import useChatsData from '@/app/hooks/useChatsData';
-import useUserData from '@/app/hooks/useUserData';
-import { Chat } from '@/app/infra/models/Chat';
-import { User } from '@/app/infra/models/User';
+import useChatData, { ChatsData } from '@/app/hooks/useChatData';
+import useFriendshipData, { FriendshipsData } from '@/app/hooks/useFriendshipData';
+import useUserData, { UserData } from '@/app/hooks/useUserData';
 
 interface AppDataProps {
-    user: {
-        data?: User | null;
-        loading: boolean;
-    };
-    chats: {
-        data?: Chat[] | null;
-        loading: boolean;
-    };
+    user: UserData;
+    chats: ChatsData;
+    friendships: FriendshipsData;
 }
 
 const defaultData = {
@@ -25,17 +19,23 @@ const defaultData = {
 const AppDataContext = React.createContext<AppDataProps>({
     user: defaultData,
     chats: defaultData,
+    friendships: defaultData,
 });
 
 export function AppDataProvider({ children }: { children: React.ReactNode }) {
     const userData = useUserData();
-    const chatsData = useChatsData();
+    const chatsData = useChatData();
+    const friendshipsData = useFriendshipData();
 
     if (!userData.data && !userData.loading) {
         return <Navigate to="/on-boarding" />;
     }
 
-    return <AppDataContext.Provider value={{ user: userData, chats: chatsData }}>{children}</AppDataContext.Provider>;
+    return (
+        <AppDataContext.Provider value={{ user: userData, chats: chatsData, friendships: friendshipsData }}>
+            {children}
+        </AppDataContext.Provider>
+    );
 }
 
 export default AppDataContext;
