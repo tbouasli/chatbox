@@ -21,7 +21,7 @@ export const auth = getAuth(app);
 export const firestore = getFirestore(app);
 export const storage = getStorage(app);
 export const messaging = getMessaging(app);
-export const functions = getFunctions(app);
+export const functions = getFunctions(app, 'southamerica-east1');
 
 if (import.meta.env.VITE_FIREBASE_USE_EMULATOR === 'true') {
     console.log('Using Firebase Emulator');
