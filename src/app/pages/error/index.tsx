@@ -1,5 +1,9 @@
+import { logEvent } from 'firebase/analytics';
 import { Undo2 } from 'lucide-react';
+import React from 'react';
 import { useNavigate, useRouteError } from 'react-router-dom';
+
+import { analytics } from '@/lib/firebase';
 
 import ChatBoxLogo from '@/shared/components/atom/ChatBoxLogo';
 import { Button } from '@/shared/components/ui/button';
@@ -13,6 +17,21 @@ interface ErrorType {
 function ErrorPage() {
     const error = useRouteError() as ErrorType;
     const navigate = useNavigate();
+
+    React.useEffect(() => {
+        async function logError() {
+            const analyticsInstance = await analytics;
+
+            if (!analyticsInstance) return;
+
+            logEvent(analyticsInstance, 'exception', {
+                description: error?.data,
+                fatal: true,
+            });
+        }
+
+        logError();
+    }, [error?.data]);
 
     function getErrorMessage() {
         // in english
