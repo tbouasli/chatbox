@@ -1,5 +1,3 @@
-import { signOut } from 'firebase/auth';
-
 import { auth } from '@/lib/firebase';
 
 import Title from '@/shared/components/atom/Title';
@@ -7,7 +5,7 @@ import AppHeaderWithBackButton from '@/shared/components/molecule/AppHeaderWithB
 
 function OnBoardingHeader() {
     return (
-        <AppHeaderWithBackButton onClick={() => signOut(auth)}>
+        <AppHeaderWithBackButton onClick={() => auth.signOut()}>
             <Title text="Create Profile" />
         </AppHeaderWithBackButton>
     );

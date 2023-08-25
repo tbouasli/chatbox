@@ -28,7 +28,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
     const friendshipsData = useFriendshipData();
 
     if (!userData.data && !userData.loading) {
-        return <Navigate to="/on-boarding" />;
+        return <Navigate to="/app/on-boarding" />;
     }
 
     return (

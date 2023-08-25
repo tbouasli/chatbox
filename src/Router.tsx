@@ -45,8 +45,8 @@ const router = createBrowserRouter(
                 <Route path="chat">
                     <Route path=":chatId" element={<ChatPage />} />
                 </Route>
+                <Route path="on-boarding" element={<OnBoardingPage />} />
             </Route>
-            <Route path="on-boarding" element={<OnBoardingPage />} />
         </Route>,
     ),
 );
