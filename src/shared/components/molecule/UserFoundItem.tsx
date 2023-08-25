@@ -36,6 +36,8 @@ function UserFoundItem({ user, loading }: UserFoundItemProps) {
         return null;
     }
 
+    if (user?.id === userData?.data?.id) return null;
+
     return (
         <UserItem displayName={user?.displayName} nickname={user?.nickname} photoURL={user?.photoURL} loading={loading}>
             <UserItemContent friendship={friendship} user={user} />
