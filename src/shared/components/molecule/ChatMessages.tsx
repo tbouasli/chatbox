@@ -31,7 +31,7 @@ function ChatMessages({ id }: ChatMessagesProps) {
     }, [messages, getMoreMessages]);
 
     return (
-        <div className="flex flex-col-reverse grow gap-2 p-2 w-full overflow-scroll">
+        <div className="flex flex-col-reverse grow gap-2 p-2 w-full overflow-y-scroll overflow-x-hidden">
             {messages?.map((message) => (
                 <MessageComponent
                     key={message.id}
