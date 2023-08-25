@@ -3,9 +3,9 @@ import * as z from 'zod';
 
 import useChat from '@/app/hooks/useChat';
 
-import { Button } from '../ui/button';
-import { Input } from '../ui/input';
-import { useToast } from '../ui/use-toast';
+import { Button } from '../../../shared/components/ui/button';
+import { Input } from '../../../shared/components/ui/input';
+import { useToast } from '../../../shared/components/ui/use-toast';
 
 interface ChatFooterProps {
     id?: string;

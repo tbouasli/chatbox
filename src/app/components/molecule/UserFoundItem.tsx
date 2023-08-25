@@ -6,7 +6,7 @@ import useFriendship from '@/app/hooks/useFriendship';
 import { FriendshipData } from '@/app/hooks/useFriendshipData';
 import { User } from '@/app/infra/models/User';
 
-import { Button } from '../ui/button';
+import { Button } from '../../../shared/components/ui/button';
 import UserItem from './UserItem';
 
 interface UserFoundItemProps {

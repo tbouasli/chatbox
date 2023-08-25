@@ -2,10 +2,11 @@ import { Search } from 'lucide-react';
 import React from 'react';
 import { useSearchBox } from 'react-instantsearch';
 
-import AppHeaderWithBackButton from '@/shared/components/molecule/AppHeaderWithBackButton';
 import { Input } from '@/shared/components/ui/input';
 
-function SearchUserHeader() {
+import HeaderWithBackButton from '@/app/components/molecule/HeaderWithBackButton';
+
+function SearchUserPageHeader() {
     const { refine } = useSearchBox();
 
     const handleChange = React.useCallback(
@@ -18,13 +19,13 @@ function SearchUserHeader() {
     );
 
     return (
-        <AppHeaderWithBackButton>
+        <HeaderWithBackButton>
             <div className="flex items-center w-full gap-3">
                 <Search className="text-input" height={20} width={20} />
                 <Input placeholder="Search" onChange={handleChange} />
             </div>
-        </AppHeaderWithBackButton>
+        </HeaderWithBackButton>
     );
 }
 
-export default SearchUserHeader;
+export default SearchUserPageHeader;

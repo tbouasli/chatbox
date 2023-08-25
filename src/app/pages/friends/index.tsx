@@ -1,12 +1,12 @@
-import FriendRequests from '@/shared/components/molecule/FriendRequests';
-import FriendList from '@/shared/components/organism/FriendList';
-import FriendsHeader from '@/shared/components/organism/FriendsHeader';
+import FriendRequestsNotification from '@/app/components/molecule/FriendRequests';
+import FriendList from '@/app/components/organism/FriendList';
+import FriendsHeader from '@/app/components/organism/FriendsHeader';
 
 function FriendsPage() {
     return (
         <main className="page">
             <FriendsHeader />
-            <FriendRequests />
+            <FriendRequestsNotification />
             <FriendList />
         </main>
     );

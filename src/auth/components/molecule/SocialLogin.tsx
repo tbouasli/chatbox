@@ -1,4 +1,4 @@
-import ContinueWithGoogle from '@/shared/components/molecule/ContinueWithGoogle';
+import ContinueWithGoogle from '@/auth/components/atom/ContinueWithGoogle';
 
 function SocialLogin() {
     return (

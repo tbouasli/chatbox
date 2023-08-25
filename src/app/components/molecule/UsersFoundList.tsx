@@ -1,7 +1,6 @@
 import { useHits, useSearchBox } from 'react-instantsearch';
 
-import UserFoundItem from '@/shared/components/molecule/UserFoundItem';
-
+import UserFoundItem from '@/app/components/molecule/UserFoundItem';
 import { User } from '@/app/infra/models/User';
 
 function UsersFoundList() {

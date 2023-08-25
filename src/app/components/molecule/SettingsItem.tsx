@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 
-import ListItem from './ListItem';
+import ListItem from '../atom/ListItem';
 
 interface SettingsItemProps {
     iconSrc: string;

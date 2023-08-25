@@ -1,13 +1,14 @@
 import { auth } from '@/lib/firebase';
 
 import Title from '@/shared/components/atom/Title';
-import AppHeaderWithBackButton from '@/shared/components/molecule/AppHeaderWithBackButton';
+
+import HeaderWithBackButton from '@/app/components/molecule/HeaderWithBackButton';
 
 function OnBoardingHeader() {
     return (
-        <AppHeaderWithBackButton onClick={() => auth.signOut()}>
+        <HeaderWithBackButton onClick={() => auth.signOut()}>
             <Title text="Create Profile" />
-        </AppHeaderWithBackButton>
+        </HeaderWithBackButton>
     );
 }
 

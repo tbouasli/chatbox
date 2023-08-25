@@ -3,7 +3,7 @@ import React from 'react';
 import useAppData from '@/app/hooks/useAppData';
 import { ChatData } from '@/app/hooks/useChatData';
 
-import AppHeaderWithBackButton from '../molecule/AppHeaderWithBackButton';
+import HeaderWithBackButton from '../molecule/HeaderWithBackButton';
 import UserItem from '../molecule/UserItem';
 
 interface ChatHeaderProps {
@@ -23,9 +23,9 @@ function ChatHeader({ id }: ChatHeaderProps) {
     }, [chats.data, id]);
 
     return (
-        <AppHeaderWithBackButton>
+        <HeaderWithBackButton>
             <UserItem displayName={chat?.displayName} photoURL={chat?.photoURL} loading={chats.loading} />
-        </AppHeaderWithBackButton>
+        </HeaderWithBackButton>
     );
 }
 export default ChatHeader;

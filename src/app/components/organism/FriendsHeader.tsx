@@ -2,11 +2,12 @@ import { UserPlus } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 import Title from '@/shared/components/atom/Title';
-import AppHeaderWithBackButton from '@/shared/components/molecule/AppHeaderWithBackButton';
+
+import HeaderWithBackButton from '@/app/components/molecule/HeaderWithBackButton';
 
 function FriendsHeader() {
     return (
-        <AppHeaderWithBackButton>
+        <HeaderWithBackButton>
             <div className="flex items-center justify-between w-full">
                 <Title text="Friends" />
                 <div className="flex items-center gap-2">
@@ -15,7 +16,7 @@ function FriendsHeader() {
                     </Link>
                 </div>
             </div>
-        </AppHeaderWithBackButton>
+        </HeaderWithBackButton>
     );
 }
 

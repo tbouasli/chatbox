@@ -1,9 +1,10 @@
 import { Link } from 'react-router-dom';
 
 import ChatBoxLogoWithTitle from '@/shared/components/molecule/ChatBoxLogoWithTitle';
-import DividerWithInfix from '@/shared/components/molecule/Divider';
-import SignUpForm from '@/shared/components/organism/SignUpForm';
-import SocialLogin from '@/shared/components/organism/SocialLogin';
+
+import DividerWithInfix from '@/auth/components/molecule/Divider';
+import SocialLogin from '@/auth/components/molecule/SocialLogin';
+import SignUpForm from '@/auth/components/organism/SignUpForm';
 
 function SignUpPage() {
     return (

@@ -1,11 +1,12 @@
 import Title from '@/shared/components/atom/Title';
-import AppHeaderWithBackButton from '@/shared/components/molecule/AppHeaderWithBackButton';
+
+import HeaderWithBackButton from '@/app/components/molecule/HeaderWithBackButton';
 
 function FriendsRequestsHeader() {
     return (
-        <AppHeaderWithBackButton>
+        <HeaderWithBackButton>
             <Title text="Friend Requests" />
-        </AppHeaderWithBackButton>
+        </HeaderWithBackButton>
     );
 }
 

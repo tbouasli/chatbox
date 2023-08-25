@@ -1,8 +1,8 @@
 import { useParams } from 'react-router-dom';
 
-import ChatMessages from '@/shared/components/molecule/ChatMessages';
-import ChatFooter from '@/shared/components/organism/ChatFooter';
-import ChatHeader from '@/shared/components/organism/ChatHeader';
+import ChatFooter from '@/app/components/molecule/ChatFooter';
+import ChatMessages from '@/app/components/molecule/ChatMessages';
+import ChatHeader from '@/app/components/organism/ChatHeader';
 
 function ChatPage() {
     const { chatId } = useParams<{ chatId: string }>();

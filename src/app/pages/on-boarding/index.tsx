@@ -1,5 +1,5 @@
-import OnBoardingForm from '@/shared/components/organism/OnBoardingForm';
-import OnBoardingHeader from '@/shared/components/organism/OnBoardingHeader';
+import OnBoardingForm from '@/app/components/organism/OnBoardingForm';
+import OnBoardingHeader from '@/app/components/organism/OnBoardingHeader';
 
 function OnBoardingPage() {
     return (

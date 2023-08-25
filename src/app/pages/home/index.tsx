@@ -1,8 +1,9 @@
 import { Link } from 'react-router-dom';
 
-import ChatList from '@/shared/components/organism/ChatList';
-import ChatsHeader from '@/shared/components/organism/ChatsHeader';
 import { Button } from '@/shared/components/ui/button';
+
+import ChatList from '@/app/components/organism/ChatList';
+import ChatsHeader from '@/app/components/organism/ChatsHeader';
 
 function HomePage() {
     return (

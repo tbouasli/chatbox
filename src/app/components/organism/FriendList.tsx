@@ -1,5 +1,4 @@
-import UserItem from '@/shared/components/molecule/UserItem';
-
+import UserItem from '@/app/components/molecule/UserItem';
 import useAppData from '@/app/hooks/useAppData';
 import useChat from '@/app/hooks/useChat';
 

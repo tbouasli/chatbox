@@ -2,7 +2,7 @@ import { Timestamp } from 'firebase/firestore';
 
 import UserImage from '@/shared/components/atom/UserImage';
 
-import ListItem from './ListItem';
+import ListItem from '../atom/ListItem';
 
 interface ChatItemProps {
     onClick?: () => void;

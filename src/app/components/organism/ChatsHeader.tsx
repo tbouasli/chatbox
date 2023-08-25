@@ -1,11 +1,12 @@
 import { Link } from 'react-router-dom';
 
-import AppHeader from '@/shared/components/molecule/AppHeader';
 import ChatBoxLogoWithTitle from '@/shared/components/molecule/ChatBoxLogoWithTitle';
+
+import Header from '@/app/components/atom/Header';
 
 function ChatsHeader() {
     return (
-        <AppHeader className="justify-between">
+        <Header className="justify-between">
             <ChatBoxLogoWithTitle />
             <div className="flex items-center gap-2">
                 <img className="text-primary-foreground opacity-50" src="/assets/icon/search.svg" alt="Search" height={24} width={24} />
@@ -13,7 +14,7 @@ function ChatsHeader() {
                     <img src="/assets/icon/settings.svg" alt="Settings" height={24} width={24} />
                 </Link>
             </div>
-        </AppHeader>
+        </Header>
     );
 }
 

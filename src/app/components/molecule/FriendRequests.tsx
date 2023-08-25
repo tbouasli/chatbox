@@ -1,12 +1,11 @@
 import { useNavigate } from 'react-router-dom';
 
-import NotificationBadge from '@/shared/components/atom/NotificationBadge';
-
+import NotificationBadge from '@/app/components/atom/NotificationBadge';
 import useAppData from '@/app/hooks/useAppData';
 
-import ListItem from './ListItem';
+import ListItem from '../atom/ListItem';
 
-function FriendRequests() {
+function FriendRequestsNotification() {
     const { friendships } = useAppData();
     const navigate = useNavigate();
 
@@ -21,4 +20,4 @@ function FriendRequests() {
         </ListItem>
     );
 }
-export default FriendRequests;
+export default FriendRequestsNotification;

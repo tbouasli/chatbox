@@ -1,4 +1,4 @@
-import Divider from '@/shared/components/atom/Divider';
+import Divider from '@/auth/components/atom/Divider';
 
 interface DividerWithInfixProps {
     infix: string;

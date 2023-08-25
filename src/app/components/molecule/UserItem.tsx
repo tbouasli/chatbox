@@ -1,6 +1,6 @@
 import UserImage from '@/shared/components/atom/UserImage';
 
-import ListItem from './ListItem';
+import ListItem from '../atom/ListItem';
 
 interface UserItemProps {
     onClick?: () => void;
