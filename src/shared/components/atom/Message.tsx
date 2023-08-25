@@ -17,16 +17,12 @@ const { format } = Intl.DateTimeFormat('pt-BR', {
 
 function Message({ content, createdAt, fromSelf, read }: MessageProps) {
     return (
-        <div className={`relative flex flex-col gap-1 ${fromSelf ? 'items-end' : 'items-start'}`}>
-            <div
-                className={`flex gap-1 p-2 rounded-md items-end ${
-                    fromSelf ? 'bg-primary text-primary-foreground' : 'bg-primary-foreground text-primary'
-                }`}
-            >
-                <span className="text-sm">{content}</span>
-                <span className="text-xs text-gray-400">{format(createdAt.toDate())}</span>
-                <span className="text-gray-400">{read ? <CheckCheck size={10} /> : <Check size={10} />}</span>
-            </div>
+        <div
+            className={`p-2 w-fit max-w-[60%] rounded-md items-end
+            ${fromSelf ? 'bg-primary text-primary-foreground self-end' : 'bg-primary-foreground text-primary'}`}
+        >
+            <span className="text-sm break-words">{content}</span>
+            <span className="text-xs text-gray-400 self-end">{format(createdAt.toDate())}</span>
         </div>
     );
 }
