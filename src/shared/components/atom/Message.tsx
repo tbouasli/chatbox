@@ -22,7 +22,10 @@ function Message({ content, createdAt, fromSelf, read }: MessageProps) {
             ${fromSelf ? 'bg-primary text-primary-foreground self-end' : 'bg-primary-foreground text-primary'}`}
         >
             <span className="text-sm break-words">{content}</span>
-            <span className="text-xs text-gray-400 self-end">{format(createdAt.toDate())}</span>
+            <span className="text-xs text-gray-400 self-end">
+                {format(createdAt.toDate())}
+                <span className="text-gray-400 inline-block">{read ? <CheckCheck size={10} /> : <Check size={10} />}</span>
+            </span>
         </div>
     );
 }
