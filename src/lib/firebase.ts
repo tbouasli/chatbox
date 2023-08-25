@@ -1,7 +1,7 @@
 import { getAnalytics, isSupported } from 'firebase/analytics';
 import { initializeApp } from 'firebase/app';
 import { connectAuthEmulator, getAuth } from 'firebase/auth';
-import { connectFirestoreEmulator, getFirestore } from 'firebase/firestore';
+import { connectFirestoreEmulator, initializeFirestore, persistentLocalCache } from 'firebase/firestore';
 import { connectFunctionsEmulator, getFunctions } from 'firebase/functions';
 import { getMessaging } from 'firebase/messaging';
 import { connectStorageEmulator, getStorage } from 'firebase/storage';
@@ -18,7 +18,9 @@ const firebaseConfig = {
 export const app = initializeApp(firebaseConfig);
 export const analytics = isSupported().then((yes) => (yes ? getAnalytics(app) : null));
 export const auth = getAuth(app);
-export const firestore = getFirestore(app);
+export const firestore = initializeFirestore(app, {
+    localCache: persistentLocalCache(),
+});
 export const storage = getStorage(app);
 export const messaging = getMessaging(app);
 export const functions = getFunctions(app, 'southamerica-east1');
