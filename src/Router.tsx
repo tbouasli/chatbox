@@ -13,6 +13,7 @@ import { AppDataProvider } from './app/provider/AppData';
 import SignInPage from './auth/pages/sign-in';
 import SignUpPage from './auth/pages/sign-up';
 import AuthRoute from './shared/components/HOC/AuthRoute';
+import useDesktop from './shared/hooks/useDesktop';
 
 const router = createBrowserRouter(
     createRoutesFromElements(
@@ -51,6 +52,8 @@ const router = createBrowserRouter(
 );
 
 function Router() {
+    useDesktop();
+
     return <RouterProvider router={router} />;
 }
 

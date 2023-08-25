@@ -111,7 +111,7 @@ function OnBoardingForm() {
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4">
                 <div className="center">
-                    <ImagePicker setImage={setImage} defaultImage={user?.photoURL} />
+                    <ImagePicker setImage={setImage} defaultImage={user?.photoURL ?? '/assets/image/placeholder.png'} />
                 </div>
                 <FormField
                     control={form.control}

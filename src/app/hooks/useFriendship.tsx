@@ -1,6 +1,8 @@
-import { httpsCallable } from 'firebase/functions';
+import { HttpsCallable, HttpsCallableResult, httpsCallable } from 'firebase/functions';
 
 import { functions } from '@/lib/firebase';
+
+import { useToast } from '@/shared/components/ui/use-toast';
 
 interface requestFriendshipRequest {
     friendUid: string;
@@ -19,9 +21,27 @@ interface rejectFriendshipRequest {
 }
 
 export default function useFriendship() {
-    const requestFriendship = httpsCallable<requestFriendshipRequest, Response>(functions, 'requestFriendship');
-    const acceptFriendship = httpsCallable<acceptFriendshipRequest, Response>(functions, 'acceptFriendship');
-    const rejectFriendship = httpsCallable<rejectFriendshipRequest, Response>(functions, 'rejectFriendship');
+    const { toast } = useToast();
+
+    function errorHandlingWrapper<I, O>(callable: HttpsCallable<I, O>) {
+        return async (data: I): Promise<HttpsCallableResult<O>> => {
+            try {
+                throw new Error('Something went wrong');
+                return await callable(data);
+            } catch (error) {
+                toast({
+                    title: 'Error',
+                    description: 'Something went wrong',
+                });
+
+                throw error;
+            }
+        };
+    }
+
+    const requestFriendship = errorHandlingWrapper(httpsCallable<requestFriendshipRequest, Response>(functions, 'requestFriendship'));
+    const acceptFriendship = errorHandlingWrapper(httpsCallable<acceptFriendshipRequest, Response>(functions, 'acceptFriendship'));
+    const rejectFriendship = errorHandlingWrapper(httpsCallable<rejectFriendshipRequest, Response>(functions, 'rejectFriendship'));
 
     return { requestFriendship, acceptFriendship, rejectFriendship };
 }

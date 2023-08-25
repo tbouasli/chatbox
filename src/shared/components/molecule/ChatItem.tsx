@@ -44,7 +44,7 @@ function ChatItem({ displayName, lastMessage, lastMessageTimestamp, photoURL, lo
                     {lastMessageTimestamp && <span className="text-xs text-gray-500">{format(lastMessageTimestamp.toDate())}</span>}
                 </div>
                 <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-500">{lastMessage ?? 'New chat!'}</span>
+                    <span className="text-sm text-gray-500 truncate">{lastMessage ?? 'New chat!'}</span>
                     {unreadMessages !== undefined && unreadMessages > 0 && (
                         <span className="bg-primary rounded-full text-primary-foreground text-xs px-1">{unreadMessages}</span>
                     )}
