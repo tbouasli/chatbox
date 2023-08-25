@@ -6,12 +6,13 @@ import AppHeader from './AppHeader';
 
 interface AppHeaderProps extends Pick<React.HTMLProps<HTMLDivElement>, 'className'> {
     children?: React.ReactNode;
+    onClick?: () => void;
 }
 
-function AppHeaderWithBackButton({ children, className }: AppHeaderProps) {
+function AppHeaderWithBackButton({ children, onClick, className }: AppHeaderProps) {
     return (
         <AppHeader className={className}>
-            <BackButton />
+            <BackButton onClick={onClick} />
             {children}
         </AppHeader>
     );
