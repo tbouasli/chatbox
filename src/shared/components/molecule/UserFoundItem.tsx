@@ -1,12 +1,9 @@
-import { and, collection, onSnapshot, query, where } from 'firebase/firestore';
+import { Check, Clock, Trash, UserCheck2, UserPlus } from 'lucide-react';
 import React from 'react';
-
-import { firestore } from '@/lib/firebase';
 
 import useAppData from '@/app/hooks/useAppData';
 import useFriendship from '@/app/hooks/useFriendship';
-import { friendshipConverter } from '@/app/infra/converter/FriendshipConverter';
-import { Friendship } from '@/app/infra/models/Friendship';
+import { FriendshipData } from '@/app/hooks/useFriendshipData';
 import { User } from '@/app/infra/models/User';
 
 import { Button } from '../ui/button';
@@ -18,32 +15,22 @@ interface UserFoundItemProps {
 }
 
 function UserFoundItem({ user, loading }: UserFoundItemProps) {
-    const { user: userData } = useAppData();
-    const [friendship, setFriendship] = React.useState<Friendship>();
+    const { user: userData, friendships } = useAppData();
+    const [friendship, setFriendship] = React.useState<FriendshipData>();
 
     React.useEffect(() => {
-        if (!user || !userData.data?.id) return;
+        if (!user || !userData) {
+            return;
+        }
 
-        const collectionRef = collection(firestore, 'friendships').withConverter(friendshipConverter);
-        const queryRef = query(
-            collectionRef,
-            and(where('users', 'array-contains', user?.id), where('users', 'array-contains', userData.data?.id)),
-        );
+        const friendship = friendships?.data?.find((friendship) => friendship.friendId === user.id);
 
-        const unsubscribe = onSnapshot(queryRef, (snapshot) => {
-            if (snapshot.empty) {
-                return;
-            }
-
-            const friendship = snapshot.docs[0].data();
-
-            setFriendship(friendship);
-        });
+        setFriendship(friendship);
 
         return () => {
-            unsubscribe();
+            setFriendship(undefined);
         };
-    }, [user, userData.data?.id]);
+    }, [friendships, user, userData]);
 
     if (!user && !loading) {
         return null;
@@ -51,13 +38,13 @@ function UserFoundItem({ user, loading }: UserFoundItemProps) {
 
     return (
         <UserItem displayName={user?.displayName} nickname={user?.nickname} photoURL={user?.photoURL} loading={loading}>
-            <UserItemContent friendship={friendship} />
+            <UserItemContent friendship={friendship} user={user} />
         </UserItem>
     );
 }
 
-function UserItemContent({ friendship, user }: { friendship?: Friendship; user?: User }) {
-    const { requestFriendship, acceptFriendship } = useFriendship();
+function UserItemContent({ friendship, user }: { friendship?: FriendshipData; user?: User }) {
+    const { requestFriendship, acceptFriendship, rejectFriendship } = useFriendship();
 
     const requestFriendshipHandler = React.useCallback(async () => {
         if (!user) {
@@ -72,24 +59,44 @@ function UserItemContent({ friendship, user }: { friendship?: Friendship; user?:
     }, [requestFriendship, user]);
 
     if (!friendship || friendship?.status === 'rejected') {
-        return <Button onClick={requestFriendshipHandler}>Add Friend</Button>;
+        return (
+            <Button onClick={requestFriendshipHandler}>
+                <UserPlus className="text-primary-foreground" height={16} width={16} />
+            </Button>
+        );
     }
 
     if (friendship.status === 'pending') {
-        if (friendship.senderId !== user?.id) {
+        if (friendship.type === 'received') {
             return (
-                <>
-                    <Button onClick={() => acceptFriendship({ friendshipId: friendship.id })}>Accept</Button>
-                    <Button onClick={() => acceptFriendship({ friendshipId: friendship.id })}>Reject</Button>
-                </>
+                <div className="flex gap-2">
+                    <Button
+                        className="h-8 aspect-square p-2"
+                        variant="destructive"
+                        onClick={() => rejectFriendship({ friendshipId: friendship.id })}
+                    >
+                        <Trash className="text-primary-foreground" height={16} width={16} />
+                    </Button>
+                    <Button className="h-8 aspect-square p-2" onClick={() => acceptFriendship({ friendshipId: friendship.id })}>
+                        <Check className="text-primary-foreground" height={16} width={16} />
+                    </Button>
+                </div>
             );
         }
 
-        return <Button disabled={true}>Pending</Button>;
+        return (
+            <Button disabled={true}>
+                <Clock className="text-primary-foreground" height={16} width={16} />
+            </Button>
+        );
     }
 
     if (friendship.status === 'accepted') {
-        return <Button disabled={true}>Friends</Button>;
+        return (
+            <Button disabled={true}>
+                <UserCheck2 className="text-primary-foreground" height={16} width={16} />
+            </Button>
+        );
     }
 }
 

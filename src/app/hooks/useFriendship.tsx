@@ -26,7 +26,6 @@ export default function useFriendship() {
     function errorHandlingWrapper<I, O>(callable: HttpsCallable<I, O>) {
         return async (data: I): Promise<HttpsCallableResult<O>> => {
             try {
-                throw new Error('Something went wrong');
                 return await callable(data);
             } catch (error) {
                 toast({

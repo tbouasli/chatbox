@@ -3,7 +3,7 @@ import OnBoardingHeader from '@/shared/components/organism/OnBoardingHeader';
 
 function OnBoardingPage() {
     return (
-        <main className="h-full w-full flex flex-col">
+        <main className="page">
             <OnBoardingHeader />
             <section className="flex grow center p-4">
                 <OnBoardingForm />

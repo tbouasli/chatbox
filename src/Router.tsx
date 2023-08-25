@@ -32,6 +32,7 @@ const router = createBrowserRouter(
                 }
             >
                 <Route path="" element={<HomePage />} />
+                <Route path="on-boarding" element={<OnBoardingPage />} />
                 <Route path="friends">
                     <Route path="" element={<FriendsPage />} />
                     <Route path="search" element={<SearchUserPage />} />
@@ -45,7 +46,6 @@ const router = createBrowserRouter(
                 <Route path="chat">
                     <Route path=":chatId" element={<ChatPage />} />
                 </Route>
-                <Route path="on-boarding" element={<OnBoardingPage />} />
             </Route>
         </Route>,
     ),

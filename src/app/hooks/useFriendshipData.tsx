@@ -13,6 +13,7 @@ import { User } from '@/app/infra/models/User';
 
 export interface FriendshipData {
     id: string;
+    friendId: string;
     displayName: string;
     nickname: string;
     photoURL: string;
@@ -64,6 +65,7 @@ export default function useFriendshipData(): FriendshipsData {
 
                         const friendshipData: FriendshipData = {
                             id: friendship.id,
+                            friendId: user.id,
                             displayName: data.displayName,
                             nickname: data.nickname,
                             photoURL: data.photoURL,

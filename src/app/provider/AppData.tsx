@@ -1,5 +1,5 @@
 import React from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 
 import useChatData, { ChatsData } from '@/app/hooks/useChatData';
 import useFriendshipData, { FriendshipsData } from '@/app/hooks/useFriendshipData';
@@ -23,11 +23,13 @@ const AppDataContext = React.createContext<AppDataProps>({
 });
 
 export function AppDataProvider({ children }: { children: React.ReactNode }) {
+    const { pathname } = useLocation();
+
     const userData = useUserData();
     const chatsData = useChatData();
     const friendshipsData = useFriendshipData();
 
-    if (!userData.data && !userData.loading) {
+    if (!userData.data && !userData.loading && pathname !== '/app/on-boarding') {
         return <Navigate to="/app/on-boarding" />;
     }
 
