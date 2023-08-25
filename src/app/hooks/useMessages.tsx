@@ -29,8 +29,6 @@ export default function useMessages(chatId?: string) {
         try {
             if (!chatId) return;
 
-            setLoading(true);
-
             const messagesQuery = query(
                 collection(firestore, 'chats', chatId, 'messages').withConverter(messageConverter),
                 orderBy('createdAt', 'desc'),
@@ -48,8 +46,6 @@ export default function useMessages(chatId?: string) {
             });
 
             return () => subscription();
-
-            setLoading(false);
         } catch (e) {
             console.log(e);
         }
