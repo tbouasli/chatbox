@@ -1,12 +1,14 @@
 import { doc, getDoc, onSnapshot } from 'firebase/firestore';
+import { getToken } from 'firebase/messaging';
 import React from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
 
-import { auth, firestore } from '@/lib/firebase';
+import { auth, firestore, messaging } from '@/lib/firebase';
 
 import { userConverter } from '@/app/infra/converter/UserConverter';
 
 import { User } from '../infra/models/User';
+import useUser from './useUser';
 
 export interface UserData {
     data?: User | null;
@@ -14,6 +16,7 @@ export interface UserData {
 }
 
 export default function useUserData() {
+    const { updateUserFcmToken } = useUser();
     const [dataLoading, setDataLoading] = React.useState<boolean>(true);
     const [data, setData] = React.useState<User>();
     const [authUser, authUserLoading] = useAuthState(auth);
@@ -53,6 +56,16 @@ export default function useUserData() {
         );
     }, [authUser?.uid, setDataLoading]);
 
+    const updateFcmToken = React.useCallback(async () => {
+        const token = await getToken(messaging, {
+            vapidKey: 'BJvafJPTL1fBaCyiIbi8W2n8FIh5Tr28iZaiEBZGCutGwB2JExrLg8dmVRY-N5hqmROvI2jKC7BDk2LCEr1a668',
+        });
+
+        if (!token) return;
+
+        updateUserFcmToken({ fcmToken: token });
+    }, []);
+
     React.useEffect(() => {
         initiallyLoadUser();
     }, [initiallyLoadUser]);
@@ -64,6 +77,12 @@ export default function useUserData() {
             unsubscribe && unsubscribe();
         };
     }, [authUser, subscribeToUser]);
+
+    React.useEffect(() => {
+        if (Notification.permission === 'granted') {
+            updateFcmToken();
+        }
+    }, [updateFcmToken]);
 
     const loading = authUserLoading || dataLoading;
 

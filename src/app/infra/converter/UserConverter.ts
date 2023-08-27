@@ -10,6 +10,7 @@ class UserConverter implements FirestoreDataConverter<User> {
             displayName: data.displayName,
             nickname: data.nickname,
             photoURL: data.photoURL,
+            fcmToken: data.fcmToken,
         });
     }
 
@@ -18,6 +19,7 @@ class UserConverter implements FirestoreDataConverter<User> {
             displayName: user.displayName,
             nickname: user.nickname,
             photoURL: user.photoURL,
+            fcmToken: user.fcmToken,
         };
     }
 }
