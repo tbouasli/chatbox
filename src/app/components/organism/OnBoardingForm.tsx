@@ -5,6 +5,7 @@ import React from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
+import { v4 as UUID } from 'uuid';
 import * as z from 'zod';
 
 import { auth, messaging, storage } from '@/lib/firebase';
@@ -95,6 +96,7 @@ function OnBoardingForm() {
                     nickname: values.nickname,
                     photoURL: downloadURL,
                     fcmToken,
+                    deviceId: UUID(),
                 });
 
                 navigate('/app');

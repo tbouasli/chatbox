@@ -1,6 +1,5 @@
 import * as admin from 'firebase-admin';
 import { Timestamp } from 'firebase-admin/firestore';
-import { onDocumentCreated } from 'firebase-functions/v2/firestore';
 import { onCall } from 'firebase-functions/v2/https';
 import { setGlobalOptions } from 'firebase-functions/v2/options';
 
@@ -312,6 +311,7 @@ interface OnBoardUserRequest {
     nickname: string;
     photoURL: string;
     fcmToken?: string;
+    deviceId: string;
 }
 
 export const onBoardUser = onCall<OnBoardUserRequest>(async (request) => {
@@ -328,6 +328,7 @@ export const onBoardUser = onCall<OnBoardUserRequest>(async (request) => {
         const nickname = request.data?.nickname;
         const photoURL = request.data?.photoURL;
         const fcmToken = request.data?.fcmToken;
+        const deviceId = request.data?.deviceId;
 
         if (!displayName) {
             return {
@@ -347,6 +348,12 @@ export const onBoardUser = onCall<OnBoardUserRequest>(async (request) => {
             };
         }
 
+        if (!deviceId) {
+            return {
+                message: `You must provide a deviceId`,
+            };
+        }
+
         const userDoc = await firestore.doc(`users/${uid}`).get();
 
         if (userDoc.exists) {
@@ -359,10 +366,20 @@ export const onBoardUser = onCall<OnBoardUserRequest>(async (request) => {
             displayName,
             nickname,
             photoURL,
-            fcmToken,
         };
 
         await firestore.doc(`users/${uid}`).set(user);
+
+        if (fcmToken) {
+            const token = {
+                token: fcmToken,
+                deviceId,
+                createdAt: Timestamp.now(),
+                lastUsedAt: Timestamp.now(),
+            };
+
+            await firestore.doc(`users/${uid}/fcm_tokens/${fcmToken}`).set(token);
+        }
 
         return {
             message: `User boarded`,
@@ -372,136 +389,5 @@ export const onBoardUser = onCall<OnBoardUserRequest>(async (request) => {
         return {
             message: `Error onboarding user`,
         };
-    }
-});
-
-interface UpdateUserFcmTokenRequest {
-    fcmToken: string;
-}
-
-export const updateUserFcmToken = onCall<UpdateUserFcmTokenRequest>(async (request) => {
-    try {
-        const uid = request.auth?.uid;
-
-        if (!uid) {
-            return {
-                message: `You must be authenticated to update a user's FCM token`,
-            };
-        }
-
-        const fcmToken = request.data?.fcmToken;
-
-        if (!fcmToken) {
-            return {
-                message: `You must provide a fcmToken`,
-            };
-        }
-
-        const userDoc = await firestore.doc(`users/${uid}`).get();
-
-        if (!userDoc.exists) {
-            return {
-                message: `User not found`,
-            };
-        }
-
-        await userDoc.ref.update({
-            fcmToken,
-        });
-
-        return {
-            message: `User FCM token updated`,
-        };
-    } catch (error) {
-        console.log(error);
-        return {
-            message: `Error updating user FCM token`,
-        };
-    }
-});
-
-export const onMessageSent = onDocumentCreated('chats/{chatId}/messages/{messageId}', async (event) => {
-    //send notification to all members of the chat except the sender
-
-    const chatId = event.params.chatId;
-
-    const chatDoc = await firestore.doc(`chats/${chatId}`).get();
-
-    if (!chatDoc.exists) {
-        return;
-    }
-
-    const chat = chatDoc.data();
-
-    if (!chat) {
-        return;
-    }
-
-    const message = event.data?.data();
-
-    if (!message) {
-        return;
-    }
-
-    const senderId = message.senderId;
-
-    if (!senderId) {
-        return;
-    }
-
-    const senderDoc = await firestore.doc(`users/${senderId}`).get();
-
-    if (!senderDoc.exists) {
-        return;
-    }
-
-    const sender = senderDoc.data();
-
-    if (!sender) {
-        return;
-    }
-
-    const members = chat.members;
-
-    if (!members) {
-        return;
-    }
-
-    const notification: admin.messaging.Notification = {
-        title: sender.nickname,
-        body: message.text,
-    };
-
-    //for each member of the chat, send a notification except the sender
-
-    for (const memberId of members) {
-        if (memberId === senderId) {
-            continue;
-        }
-
-        const memberDoc = await firestore.doc(`users/${memberId}`).get();
-
-        if (!memberDoc.exists) {
-            continue;
-        }
-
-        const member = memberDoc.data();
-
-        if (!member) {
-            continue;
-        }
-
-        const fcmToken = member.fcmToken;
-
-        if (!fcmToken) {
-            continue;
-        }
-
-        const message: admin.messaging.Message = {
-            notification,
-            token: fcmToken,
-        };
-
-        await admin.messaging().send(message);
     }
 });
