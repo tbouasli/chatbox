@@ -1,11 +1,13 @@
 import * as admin from 'firebase-admin';
 import { Timestamp } from 'firebase-admin/firestore';
+import { onDocumentCreated } from 'firebase-functions/v2/firestore';
 import { onCall } from 'firebase-functions/v2/https';
 import { setGlobalOptions } from 'firebase-functions/v2/options';
 
 admin.initializeApp();
 
 const firestore = admin.firestore();
+const messaging = admin.messaging();
 
 setGlobalOptions({ maxInstances: 10, region: 'southamerica-east1' });
 
@@ -390,4 +392,62 @@ export const onBoardUser = onCall<OnBoardUserRequest>(async (request) => {
             message: `Error onboarding user`,
         };
     }
+});
+
+export const onMessageSent = onDocumentCreated('/chats/{chatId}/messages/{messageId}', async (event) => {
+    const chatId = event.params.chatId;
+
+    const chatDoc = await firestore.doc(`chats/${chatId}`).get();
+
+    if (!chatDoc.exists) {
+        return;
+    }
+
+    const chat = chatDoc.data();
+
+    const membersIds = chat?.members;
+
+    if (!membersIds) {
+        return;
+    }
+
+    const message = event.data?.data();
+
+    if (!message) {
+        return;
+    }
+
+    const senderId = message.senderId;
+
+    if (!senderId) {
+        return;
+    }
+
+    const senderDoc = await firestore.doc(`users/${senderId}`).get();
+
+    if (!senderDoc.exists) {
+        return;
+    }
+
+    const sender = senderDoc.data();
+
+    if (!sender) {
+        return;
+    }
+
+    const filteredMembersIds = membersIds.filter((id: string) => id !== senderId);
+
+    messaging.sendEachForMulticast({
+        tokens: filteredMembersIds,
+        data: {
+            title: sender.displayName,
+            body: message.text,
+        },
+        notification: {
+            body: message.text,
+            title: sender.displayName,
+        },
+    });
+
+    return;
 });
