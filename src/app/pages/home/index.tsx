@@ -37,6 +37,7 @@ function HomePage() {
                                 timestamp: new Date().toISOString(),
                                 token: currentToken,
                             }).then(() => {
+                                console.log('Token added to database', currentToken);
                                 localStorage.setItem('notify', new Date(new Date().getTime() + 24 * 60 * 60 * 1000).toISOString());
                             });
                         } else {

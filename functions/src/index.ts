@@ -380,7 +380,7 @@ export const onBoardUser = onCall<OnBoardUserRequest>(async (request) => {
                 lastUsedAt: Timestamp.now(),
             };
 
-            await firestore.doc(`users/${uid}/fcm_tokens/${fcmToken}`).set(token);
+            await firestore.doc(`users/${uid}/tokens/${fcmToken}`).set(token);
         }
 
         return {
@@ -437,12 +437,18 @@ export const onMessageSent = onDocumentCreated('/chats/{chatId}/messages/{messag
 
     const filteredMembersIds = membersIds.filter((id: string) => id !== senderId);
 
+    const tokensDocs = [];
+
+    for (const memberId of filteredMembersIds) {
+        const tokensQuery = await firestore.collection(`users/${memberId}/tokens`).get();
+
+        const data = tokensQuery.docs.map((doc) => doc.data());
+
+        tokensDocs.push(...data.map((token) => token.token));
+    }
+
     messaging.sendEachForMulticast({
-        tokens: filteredMembersIds,
-        data: {
-            title: sender.displayName,
-            body: message.text,
-        },
+        tokens: tokensDocs,
         notification: {
             body: message.text,
             title: sender.displayName,
